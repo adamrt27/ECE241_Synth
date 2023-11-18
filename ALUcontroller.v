@@ -15,6 +15,10 @@ module frequency_getter(input [3:0]note, input [2:0]octave, output reg [15:0]fre
 
     // make a reg to hold a^n
     reg [15:0] a_power_n;
+
+    // calculate n based on note and octave
+    reg [6:0]n = note;
+
     
     // calculate f_n
     always@(*)
