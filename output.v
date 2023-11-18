@@ -5,7 +5,7 @@ parameter bits = 8;
 parameter frequencyDivider = 25;
 
 reg [7:0] counter;
-reg [31:0] generates;
+reg [5:0] generates;
 
 always@(posedge clock) begin
     if (reset) begin
@@ -14,7 +14,7 @@ always@(posedge clock) begin
     end else begin
         counter <= counter + 1;
         generates <= generates + frequencyDivider;
-        if ((generates[31] == 1))
+        if ((generates[5] == 1))
             outs <= 1'b1;
         else 
             outs <= 1'b0;
