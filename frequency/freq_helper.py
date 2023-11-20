@@ -1,14 +1,19 @@
-f = open("freq_test.v", "w")
+f = open("/Users/adamtaback/Desktop/Courses/Year 2 Fall/ECE241/Project/ECE241_Synth/frequency/freq_test.v", "w")
 f.write("""module frequency_getter(input clk, \n
                         input reset, \n
                         input [3:0]note, \n
                         input [2:0]octave, \n
                         output [15:0]frequency); \n
-    reg [20:0] table [0:108]; """)
+    reg [20:0] table [0:108];\n\n """)
 
-tab = open("freq_table.txt", "r")
+tab = open("/Users/adamtaback/Desktop/Courses/Year 2 Fall/ECE241/Project/ECE241_Synth/frequency/lol.txt", "r")
+
+i = 0
+
 for line in tab:
-    f.write("table[" + line[0:line.find(" ")] + "] = 6'd" + line[line.find(" ")+1:] + "; \n")
+    for word in line.split():
+        f.write("\ttable[" + str(i) + "] = 21'd" + word + "; \n")
+        i += 1
     
-f.write("""assign frequency = table[note*octave]; \n
+f.write("""\n\tassign frequency = table[note*octave]; \n
 endmodule""")
