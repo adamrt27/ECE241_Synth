@@ -11,7 +11,7 @@ module square_wave_generator(
 	reg sq_wave_reg = 0;
 	assign sq_wave = sq_wave_reg;
 
- always @(posedge clk) begin
+ 	always @(posedge clk) begin
 		if (reset_n) begin
 			period <= 26'b0;
 			sq_wave_reg	<= 1'b0;

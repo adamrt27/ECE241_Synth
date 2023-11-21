@@ -6,7 +6,7 @@ f.write("""module frequency_getter(input clk, \n
                         output [15:0]frequency); \n
     reg [20:0] table [0:108];\n\n """)
 
-tab = open("/Users/adamtaback/Desktop/Courses/Year 2 Fall/ECE241/Project/ECE241_Synth/frequency/lol.txt", "r")
+tab = open("/Users/adamtaback/Desktop/Courses/Year 2 Fall/ECE241/Project/ECE241_Synth/frequency/freq_table.txt", "r")
 
 i = 0
 
@@ -17,3 +17,4 @@ for line in tab:
     
 f.write("""\n\tassign frequency = table[note*octave]; \n
 endmodule""")
+

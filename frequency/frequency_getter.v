@@ -1,15 +1,15 @@
-module frequency_getter(input clk, 
+// this module gets the frequency of a note, given the note letter and the octave. 
+// note 0 corresponds with C and octave 0 corresponds octave 0.
 
-                        input reset, 
+module frequency_getter(input [3:0]note,  			// note value: c = 0, c#/dflat = 1, d = 2, etc
+						input [2:0]octave, 			// octave value
+						output [15:0]frequency);	// frequency output, with fixed point after second L
+													// SB bit, i.e. 1635 = 16.35
 
-                        input [3:0]note, 
-
-                        input [2:0]octave, 
-
-                        output [15:0]frequency); 
-
+	// LUT to store frequency values
     reg [20:0] table [0:108];
 
+	// setting up LUT
  	table[0] = 21'd1635; 
 	table[1] = 21'd1732; 
 	table[2] = 21'd1835; 
@@ -119,6 +119,7 @@ module frequency_getter(input clk,
 	table[106] = 21'd745900; 
 	table[107] = 21'd790200; 
 
+	// assigning frequency output
 	assign frequency = table[note*octave]; 
 
 endmodule
