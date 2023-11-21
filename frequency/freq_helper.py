@@ -16,10 +16,12 @@ tab = open("/Users/adamtaback/Desktop/Courses/Year 2 Fall/ECE241/Project/ECE241_
 
 i = 0
 
+f.write("\tinitial begin \n")
 for line in tab:
     for word in line.split():
-        f.write("\tTABLE[" + str(i) + "] = 21'd" + str(round(float(str(word)))) + "; \n")
+        f.write("\t\tTABLE[" + str(i) + "] = 21'd" + str(round(float(str(word)))) + "; \n")
         i += 1
+f.write("\tend \n")
     
 f.write("""\n\tassign frequency = TABLE[note*octave]; \n
 endmodule""")
