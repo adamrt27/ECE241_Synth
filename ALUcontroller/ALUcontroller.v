@@ -69,7 +69,7 @@ module control(clk, reset, note_in, ld_note, ld_play); //  need outputs
 
     always @(posedge clk)
     begin: state_FFs
-        if(reset == 1'b0) begin
+        if(!reset) begin
             cur_state <=  start; // Should set reset state to state A
         end
         else begin 
@@ -90,7 +90,7 @@ module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
     input ld_note;      // command to load in note
     input ld_play;      // command to play note
 
-    output wave_out;    // the value of the output wave (currently only square wave so we can keep as single bit)
+    output reg wave_out;    // the value of the output wave (currently only square wave so we can keep as single bit)
 
     // registers
     reg [15:0] freq_temp;   // holds current frequency, MAKE THIS AN ARRAY SO WE CAN PLAY MULTIPLE NOTES
@@ -106,7 +106,7 @@ module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
 
     // load inputs to registers    
     always@(posedge clk) begin
-        if(reset) begin
+        if(!reset) begin
             freq_reg <= 0;
         end
         else begin
@@ -118,7 +118,7 @@ module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
 
     // load outputs
     always@(posedge clk) begin
-        if(reset) begin
+        if(!reset) begin
             wave_out <= 0;
         end
         else begin 

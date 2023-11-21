@@ -1,11 +1,11 @@
 // this module gets the frequency of a note, given the note letter and the octave.
 // note 0 corresponds with C and octave 0 corresponds octave 0.
 
-module frequency_getter(input clk,
-                        input reset,
-                        input [3:0]note,
+module frequency_getter(input [3:0]note,
                         input [2:0]octave,
                         output [15:0]frequency);
+                        
+    wire [16:0] num;
                         
     reg [20:0] TABLE [0:108];
     
@@ -120,6 +120,7 @@ module frequency_getter(input clk,
 		TABLE[107] = 21'd7902; 
 	end 
 
-	assign frequency = TABLE[note*octave]; 
-
+    assign num = note + (octave * 12);
+    assign frequency = TABLE[note*octave];
+    
 endmodule

@@ -2,11 +2,11 @@ f = open("/Users/adamtaback/Desktop/Courses/Year 2 Fall/ECE241/Project/ECE241_Sy
 f.write("""// this module gets the frequency of a note, given the note letter and the octave.
 // note 0 corresponds with C and octave 0 corresponds octave 0.
 
-module frequency_getter(input clk,
-                        input reset,
-                        input [3:0]note,
+module frequency_getter(input [3:0]note,
                         input [2:0]octave,
                         output [15:0]frequency);
+                        
+    wire [16:0] num;
                         
     reg [20:0] TABLE [0:108];
     
@@ -23,6 +23,9 @@ for line in tab:
         i += 1
 f.write("\tend \n")
     
-f.write("""\n\tassign frequency = TABLE[note*octave]; \n
+f.write("""
+    assign num = note + (octave * 12);
+    assign frequency = TABLE[note*octave];
+    
 endmodule""")
 

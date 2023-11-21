@@ -15,6 +15,6 @@ log {/*}
 add wave {/*}
 
 # TestCases: C0 (16.35), B6 (1975.53), A#7 (3729.31)
-force {note} 4'd0 0 ns, 4'd11 10 ns, 4'd9 20 ns
+force {note} 4'd0 0 ns, 4'd11 10 ns, 4'd10 20 ns
 force {octave} 3'd0 0 ns, 3'd6 10 ns, 3'd7 20 ns
 run 30 ns
