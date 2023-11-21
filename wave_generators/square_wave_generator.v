@@ -21,13 +21,8 @@ module square_wave_generator(
 		else begin 
 			if (period == 26'b0) begin
 				sq_wave_reg <= ~sq_wave_reg;
-				period <= CLOCK_FREQUENCY / frequency - 1;
-				
-			
-			end 
-
-			else 
-				period <= period - 1; 
+				period <= CLOCK_FREQUENCY / frequency - 1;		
+			end else period <= period - 1; 
 			end
 		end
 		

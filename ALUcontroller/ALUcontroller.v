@@ -1,5 +1,23 @@
+module ALUcontroller(clk, reset, note_in, note, octave, wave_out);
+
+    input clk;              // clock
+    input reset;            // reset
+    input note_in;          // tells whether note was input
+    input [3:0] note;       // tells note value of input note (a,b,d#, etc)
+    input [2:0] octave;     // tells octave of note
+    output wave_out;        // output wave value
+
+    // wires
+    wire ld_note, ld_play;
+
+    // connections to modules
+    control c0(clk, reset, note_in, ld_note, ld_play);
+    datapath d0(clk, reset, note, octave, ld_note, ld_play, wave_out);
+
+endmodule
+
 // make it so it can play multiple notes at once
-module control(clk, reset, play, ld_note, ld_play); //  need outputs
+module control(clk, reset, note_in, ld_note, ld_play); //  need outputs
 
     input clk;            // clock
     input reset;          // reset
@@ -91,8 +109,10 @@ module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
         if(reset) begin
             freq_reg <= 0;
         end
-        if (ld_note) begin
-            freq_reg <= freq_temp;
+        else begin
+            if (ld_note) begin
+                freq_reg <= freq_temp;
+            end
         end
     end
 
@@ -101,11 +121,11 @@ module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
         if(reset) begin
             wave_out <= 0;
         end
-        if (ld_play) begin
-            wave_out <= wave_reg;
+        else begin 
+            if (ld_play) begin
+                wave_out <= wave_reg;
+            end
         end
     end
-
-
 
 endmodule
