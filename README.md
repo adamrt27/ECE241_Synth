@@ -11,6 +11,7 @@ Todo:
 - [x] ADSR envelope
 - [ ] Compression (clipping)
 - [ ] Overdrive (signal gain + clipping)
+- [ ] Map FX (ADRS, Compression, etc) to keyboard and hex displays
 
 Fun, but not needed:
 
