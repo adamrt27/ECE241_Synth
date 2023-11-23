@@ -3,7 +3,7 @@ module ms_clk(clk, reset, pulse);
 	input reset; //active low reset
 	output pulse; // pulses every millisecond
 
-	RateDivider r0(clk,~reset,1'b0, pulse);
+	RateDivider r0(clk,~reset,2'b0, pulse);
 
 endmodule
 

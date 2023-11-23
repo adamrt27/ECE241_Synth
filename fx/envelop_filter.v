@@ -1,4 +1,4 @@
-module envelop_filter(clk, reset, note_on, attack, decay, sustain, rel, max_amplitude, cur_amplitude);
+module envelop_filter(clk, reset, note_in, attack, decay, sustain, rel, max_amplitude, cur_amplitude);
 
     input clk; // clock
     input reset; // low active reset
@@ -9,7 +9,7 @@ module envelop_filter(clk, reset, note_on, attack, decay, sustain, rel, max_ampl
     input [5:0] rel; // release, but cant be called that cuz its a keyword
     input [5:0] max_amplitude; // the max amplitude (basically the current volume)
 
-    output [5:0] cur_amplitude; // output multiplier that changes wave shape
+    output reg [5:0] cur_amplitude; // output multiplier that changes wave shape
 
     // CONTROL PATH
 
@@ -34,14 +34,14 @@ module envelop_filter(clk, reset, note_on, attack, decay, sustain, rel, max_ampl
             dec: begin // state to play note
                 if (cur_amplitude == sustain) next_state = sus;
                 else if (note_in == 0) next_state = re;
-                else next_state == dec;
+                else next_state = dec;
             end  
             sus: begin
                 if (!note_in) next_state = re;
                 else next_state = sus;
             end
             re: begin
-                if (cur_amplitude == 0) next_state = start;
+                if (cur_amplitude <= 0) next_state = start;
                 else next_state = re;
             end
         endcase
@@ -71,13 +71,13 @@ module envelop_filter(clk, reset, note_on, attack, decay, sustain, rel, max_ampl
                     cur_amplitude = 4'b0;
                 end
                 att: begin
-                    cur_amplitude = cur_amplitude + (attack + 1'b1);
+                    cur_amplitude = cur_amplitude + attack;
                     if(cur_amplitude > max_amplitude) begin
                         cur_amplitude = max_amplitude;
                     end
                 end
                 dec: begin
-                    cur_amplitude = cur_amplitude - decay - 1'b1;
+                    cur_amplitude = cur_amplitude - decay;
                     if(cur_amplitude <= sustain) begin
                         cur_amplitude = sustain;
                     end
@@ -86,10 +86,10 @@ module envelop_filter(clk, reset, note_on, attack, decay, sustain, rel, max_ampl
                     cur_amplitude = sustain;
                 end
                 re: begin
-                    cur_amplitude = cur_amplitude - rel - 1'b1;
-                    if(cur_amplitude <= 0) begin
+                    if (cur_amplitude == 0 | cur_amplitude <= rel) 
                         cur_amplitude = 0;
-                    end
+                    else 
+                    cur_amplitude = cur_amplitude - rel;
                 end
             endcase
         end
