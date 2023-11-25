@@ -5,7 +5,7 @@ module ALUcontroller(clk, reset, note_in, note, octave, amplitude, attack, decay
     input note_in;          // tells whether note was input
     input [3:0] note;       // tells note value of input note (a,b,d#, etc)
     input [2:0] octave;     // tells octave of note
-    input [5:0] amplitude;  // amplitude of output (middle to peak)
+    input [5:0] amplitude;  // amplitude of output (middle to peak) - maximum amplitude
     input [5:0] attack;     // attack parameter of ADSR
     input [5:0] decay;      // decay parameter of ADSR
     input [5:0] sustain;    // sustain parameter of ADSR
