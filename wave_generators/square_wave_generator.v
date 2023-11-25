@@ -2,7 +2,7 @@ module square_wave_generator(
 	input clk,
 	input reset_n,
     input [15:0]frequency,
-	input [5:0] amplitude; // amplitude from 0 to peak (not peak to peak)
+	input [5:0] amplitude, // amplitude from 0 to peak (not peak to peak)
 	output [6:0] sq_wave
 );
 
