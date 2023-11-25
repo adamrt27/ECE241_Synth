@@ -6,7 +6,7 @@ module ALUcontroller(clk, reset, note_in, note, octave, amplitude, wave_out);
     input [3:0] note;       // tells note value of input note (a,b,d#, etc)
     input [2:0] octave;     // tells octave of note
     input [5:0] amplitude,  // amplitude of output (middle to peak)
-    output wave_out;        // output wave value
+    output [6:0] wave_out;        // output wave value
 
     // wires
     wire ld_note, ld_play;
@@ -92,13 +92,13 @@ module datapath(clk, reset, note, octave, amplitude, ld_note, ld_play, wave_out)
     input ld_note;      // command to load in note
     input ld_play;      // command to play note
 
-    output reg wave_out;    // the value of the output wave (currently only square wave so we can keep as single bit)
+    output reg [6:0] wave_out;    // the value of the output wave (currently only square wave so we can keep as single bit)
 
     // registers
     reg [15:0] freq_temp;   // holds current frequency, MAKE THIS AN ARRAY SO WE CAN PLAY MULTIPLE NOTES
     reg [15:0] freq_reg;    // holds register value of frequency, used to play note
 
-    reg wave_reg;           // stores current value of wave
+    reg [6:0] wave_reg;           // stores current value of wave
 
     // stores current frequency in frequency reg
     frequency_getter freq(note, octave, freq_temp);
