@@ -1,10 +1,11 @@
-module ALUcontroller(clk, reset, note_in, note, octave, wave_out);
+module ALUcontroller(clk, reset, note_in, note, octave, amplitude, wave_out);
 
     input clk;              // clock
     input reset;            // reset
     input note_in;          // tells whether note was input
     input [3:0] note;       // tells note value of input note (a,b,d#, etc)
     input [2:0] octave;     // tells octave of note
+    input [5:0] amplitude,  // amplitude of output (middle to peak)
     output wave_out;        // output wave value
 
     // wires
@@ -12,7 +13,7 @@ module ALUcontroller(clk, reset, note_in, note, octave, wave_out);
 
     // connections to modules
     control c0(clk, reset, note_in, ld_note, ld_play);
-    datapath d0(clk, reset, note, octave, ld_note, ld_play, wave_out);
+    datapath d0(clk, reset, note, octave, amplitude, ld_note, ld_play, wave_out);
 
 endmodule
 
@@ -80,13 +81,14 @@ module control(clk, reset, note_in, ld_note, ld_play); //  need outputs
 
 endmodule
 
-module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
+module datapath(clk, reset, note, octave, amplitude, ld_note, ld_play, wave_out);
     input clk;          // clock
     input reset;        // reset
 
     input [3:0] note;   // the note input (i.e. A, Bflat, Gsharp)
     input [2:0] octave; // the octave of the note (7 total octaves)
                         // octave 4 corresponds with middle C
+    input [5:0] amplitude, // amplitude (mid to peak)
     input ld_note;      // command to load in note
     input ld_play;      // command to play note
 
@@ -102,7 +104,7 @@ module datapath(clk, reset, note, octave, ld_note, ld_play, wave_out);
     frequency_getter freq(note, octave, freq_temp);
 
     // puts current value of wave in wave_reg
-    square_wave_generator wv(clk, reset, freq_reg, wave_reg);
+    square_wave_generator wv(clk, reset, freq_reg, amplitude, wave_reg);
 
     // load inputs to registers    
     always@(posedge clk) begin
