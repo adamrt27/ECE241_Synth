@@ -3,6 +3,8 @@
 /// March 2016                        ///
 /// Introducing serial I2C audio      ///
 /////////////////////////////////////////
+//make module to send to the vga adapter
+
 module audio (
 aud_xclk	, // clock 12.288 MHz
 bclk 		, // bit stream clock
