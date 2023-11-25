@@ -5,7 +5,7 @@ module ALUcontroller(clk, reset, note_in, note, octave, amplitude, attack, decay
     input note_in;          // tells whether note was input
     input [3:0] note;       // tells note value of input note (a,b,d#, etc)
     input [2:0] octave;     // tells octave of note
-    input [5:0] amplitude;  // amplitude of output (middle to peak) - maximum amplitude
+    input [5:0] amplitude;  // amplitude of output (middle to peak)
     input [5:0] attack;     // attack parameter of ADSR
     input [5:0] decay;      // decay parameter of ADSR
     input [5:0] sustain;    // sustain parameter of ADSR
@@ -17,7 +17,7 @@ module ALUcontroller(clk, reset, note_in, note, octave, amplitude, attack, decay
 
     // connections to modules
     control c0(clk, reset, note_in, ld_note, ld_play);
-    datapath d0(clk, reset, note, octave, amplitude, ld_note, ld_play, attack, decay, sustain, rel, wave_out);
+    datapath d0(clk, reset, note_in, note, octave, amplitude, ld_note, ld_play, attack, decay, sustain, rel, wave_out);
 
 endmodule
 
@@ -85,10 +85,11 @@ module control(clk, reset, note_in, ld_note, ld_play); //  need outputs
 
 endmodule
 
-module datapath(clk, reset, note, octave, amplitude, ld_note, ld_play, attack, decay, sustain, rel, wave_out);
+module datapath(clk, reset, note_in, note, octave, amplitude, ld_note, ld_play, attack, decay, sustain, rel, wave_out);
     input clk;          // clock
     input reset;        // reset
 
+    input note_in;
     input [3:0] note;   // the note input (i.e. A, Bflat, Gsharp)
     input [2:0] octave; // the octave of the note (7 total octaves)
                         // octave 4 corresponds with middle C
@@ -106,7 +107,8 @@ module datapath(clk, reset, note, octave, amplitude, ld_note, ld_play, attack, d
     wire [15:0] freq_temp;   // holds current frequency, MAKE THIS AN ARRAY SO WE CAN PLAY MULTIPLE NOTES
     reg [15:0] freq_reg;    // holds register value of frequency, used to play note
 
-    wire [6:0] wave_reg;           // stores current value of wave
+    wire [6:0] wave_reg_unsigned;           // stores current unsigned value of wave
+    wire [6:0] wave_reg;                    // stores twos complement value of wave
 
     wire [5:0] cur_amplitude;      // stores amplitude changes made by ADSR envelop filter
 
@@ -114,10 +116,13 @@ module datapath(clk, reset, note, octave, amplitude, ld_note, ld_play, attack, d
     frequency_getter freq(note, octave, freq_temp);
 
     // filters through ADSR filter
-    envelop_filter(clk, reset, ld_note, attack, decay, sustain, rel, amplitude, cur_amplitude);
+    envelop_filter env0(clk, reset, note_in, attack, decay, sustain, rel, amplitude, cur_amplitude);
 
     // puts current value of wave in wave_reg
-    square_wave_generator wv(clk, reset, freq_reg, cur_amplitude, wave_reg);
+    square_wave_generator wv(clk, reset, freq_reg, cur_amplitude, wave_reg_unsigned);
+
+    // converts current value of wave to twos complement
+    twos_comp_converter conv(wave_reg, cur_amplitude, wave_reg);
 
     // load inputs to registers    
     always@(posedge clk) begin
@@ -137,9 +142,7 @@ module datapath(clk, reset, note, octave, amplitude, ld_note, ld_play, attack, d
             wave_out <= 0;
         end
         else begin 
-            if (ld_play) begin
-                wave_out <= wave_reg;
-            end
+            wave_out <= wave_reg;
         end
     end
 

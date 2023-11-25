@@ -68,7 +68,7 @@ module envelop_filter(clk, reset, note_in, attack, decay, sustain, rel, max_ampl
         if(ms_pulse) begin
             case (cur_state)
                 start: begin
-                    cur_amplitude = 4'b0;
+                    cur_amplitude = 6'b0;
                 end
                 att: begin
                     cur_amplitude = cur_amplitude + attack;
