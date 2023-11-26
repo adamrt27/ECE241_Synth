@@ -1,4 +1,4 @@
-module IO_controller(input clk, input reset, output [6:0] HEX);
+module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR);
 
     // setting up PS2 inputs
 
@@ -83,6 +83,7 @@ module IO_controller(input clk, input reset, output [6:0] HEX);
 
     // setting up HEX and LEDR output
 
+    // HEX
     // we want octave on hex0, amplitude on hex1, attack on hex2, decay on hex3, sustain on hex4, release on hex5
 
     // octave
@@ -117,5 +118,10 @@ module IO_controller(input clk, input reset, output [6:0] HEX);
     assign rel_hex = rel >> 2;
 
     hex_decoder hex_amplitude(rel_hex, HEX[5]);
+
+    // LEDR
+    // set note_in to LEDR 0, and note to LEDR 1-4 for testing
+    assign LEDR[0] = note_in;
+    assign LEDR[4:1] = note;
 
 endmodule
