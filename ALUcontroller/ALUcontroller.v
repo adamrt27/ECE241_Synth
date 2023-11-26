@@ -122,7 +122,7 @@ module datapath(clk, reset, note_in, note, octave, amplitude, ld_note, ld_play, 
     square_wave_generator wv(clk, reset, freq_reg, cur_amplitude, wave_reg_unsigned);
 
     // converts current value of wave to twos complement
-    twos_comp_converter conv(wave_reg, cur_amplitude, wave_reg);
+    twos_comp_converter conv(wave_reg_unsigned, cur_amplitude, wave_reg);
 
     // load inputs to registers    
     always@(posedge clk) begin
