@@ -1,4 +1,4 @@
-module IO_controller(input clk, input reset,);
+module IO_controller(input clk, input reset, output [6:0] HEX);
 
     // setting up PS2 inputs
 
@@ -62,7 +62,7 @@ module IO_controller(input clk, input reset,);
                     decay_reg <= decay_reg + ADSR_plus_plus - ADSR_minus_minus;
                 2: // sustain
                     sustain_reg <= sustain_reg + ADSR_plus_plus - ADSR_minus_minus;
-                3:
+                3: // release
                     release_reg <= release_reg + ADSR_plus_plus - ADSR_minus_minus;
             endcase
     end
@@ -82,5 +82,40 @@ module IO_controller(input clk, input reset,);
     // setting up video ouput
 
     // setting up HEX and LEDR output
+
+    // we want octave on hex0, amplitude on hex1, attack on hex2, decay on hex3, sustain on hex4, release on hex5
+
+    // octave
+    hex_decoder hex_octave(octave, HEX[0]);
+
+    // amplitude, have to make into a 4 bit, so shift by two bits right
+    wire [3:0] amplitude_hex;
+    assign amplitude_hex = amplitude >> 2;
+
+    hex_decoder hex_amplitude(amplitude_hex, HEX[1]);
+
+    // attack, same as amplitude
+    wire [3:0] attack_hex;
+    assign attack_hex = attack >> 2;
+
+    hex_decoder hex_amplitude(attack_hex, HEX[2]);
+
+    // decay, same as amplitude
+    wire [3:0] decay_hex;
+    assign decay_hex = decay >> 2;
+
+    hex_decoder hex_amplitude(decay_hex, HEX[3]);
+
+    // sustain, same as amplitude
+    wire [3:0] sustain_hex;
+    assign sustain_hex = sustain >> 2;
+
+    hex_decoder hex_amplitude(sustain_hex, HEX[4]);
+
+    // release, same as amplitude
+    wire [3:0] rel_hex;
+    assign rel_hex = rel >> 2;
+
+    hex_decoder hex_amplitude(rel_hex, HEX[5]);
 
 endmodule
