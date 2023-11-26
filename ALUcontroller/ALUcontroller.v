@@ -21,6 +21,7 @@ module ALUcontroller(clk, reset, note_in, note, octave, amplitude, attack, decay
 
 endmodule
 
+
 // make it so it can play multiple notes at once
 module control(clk, reset, note_in, ld_note, ld_play); //  need outputs
 
