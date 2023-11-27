@@ -7,13 +7,13 @@ AUD_ADCDAT,
 	AUD_DACLRCK,
     output AUD_XCK,
     output AUD_DACDAT,
-    note_in, note, octave, amplitude, attack, decay, sustain, rel,
+//    note_in, note, octave, amplitude, attack, decay, sustain, rel,
     output [6:0] wave
 );
 wire reg[6:0] wave_out
 //create a module that has all of ALU inputs
 //wire called waveout send the wire into the audio controller to get an output
-ALUcontroller a(clock, reset, note_in, note, octave, amplitude, attack, decay, sustain, rel, wave_out);
+ALUcontroller a(clock, reset, 1, 4'b000, 3'b100, 6'b111111, 6'b111111, 6'b000000, 6'b000000, 6'b000000, wave_out);
 //feed wave_out into audio controller but before that change wave_out into a 32 bit input because wave_out is currently 7bits add 0's
 //take in wave out and feed it in the audio out
 always @(posedge clock) begin
@@ -54,3 +54,4 @@ Audio_Controller a(// Inputs
 	.AUD_XCK(AUD_XCK),
 	.AUD_DACDAT(AUD_DACDAT)
 );
+endmodule

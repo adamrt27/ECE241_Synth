@@ -33,8 +33,8 @@ output			error_communication_timed_out;
 output	[7:0]	received_data;
 output		 	received_data_en;
 
-if(the_command == 2'h1C) 
+if(the_command == 8'h1C) 
 	//note is A
-if(the_command == 2'h1D)
+if(the_command == 8'h1D)
 	//note is A+
-if(the_command == 2'h1B)
+if(the_command == 8'h1B)
