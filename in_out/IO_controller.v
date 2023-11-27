@@ -2,6 +2,8 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
 
     // setting up PS2 inputs
 
+    // feed into: note_in, note, octave_plus_plus, octave_minus_minus, amp_plus_plus, amp_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
+
     // setting up ALUcontroller
     
     // wire inputs to ALUcontroller
@@ -17,17 +19,17 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     // wire ouputs from ALUcontroller
     wire [6:0] wave_out;
 
-    // reg inputs for changing "slider" values (ie values that are not set absolutely, but adjusted via slider, eg octave, amplitude)
-    reg octave_plus_plus; // if 1, increment octave by 1, else dont change
-    reg octave_minus_minus; // if 1 decrease octave by 1, else dont change
-    reg amp_plus_plus; // if 1 increase amplitude by 1, else dont change
-    reg amp_minus_minus; // if 1 decrease amplitude by 1
-    reg [1:0] ADSR_selector; // if 0 - change attack
+    // wire inputs for changing "slider" values (ie values that are not set absolutely, but adjusted via slider, eg octave, amplitude)
+    wire octave_plus_plus; // if 1, increment octave by 1, else dont change 
+    wire octave_minus_minus; // if 1 decrease octave by 1, else dont change
+    wire amp_plus_plus; // if 1 increase amplitude by 1, else dont change
+    wire amp_minus_minus; // if 1 decrease amplitude by 1
+    wire [1:0] ADSR_selector; // if 0 - change attack
                               //    1 - change decay
                               //    2 - change sustain
                               //    3 - change release
-    reg ADSR_plus_plus; // if 1, increment selected ADSR by 1
-    reg ADSR_minus_minus;  // if 1, decrease selected ADSR by 1
+    wire ADSR_plus_plus; // if 1, increment selected ADSR by 1
+    wire ADSR_minus_minus;  // if 1, decrease selected ADSR by 1
     
     // the following values are stored in reg so they can be changed via +/- buttons instead of absolute values
     reg [2:0] octave_reg;
