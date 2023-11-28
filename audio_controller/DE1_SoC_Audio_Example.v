@@ -5,7 +5,6 @@ module DE1_SoC_Audio_Example (
 	KEY,
 
 	AUD_ADCDAT,
-
 	// Bidirectionals
 	AUD_BCLK,
 	AUD_ADCLRCK,
@@ -62,7 +61,7 @@ wire				audio_out_allowed;
 wire		[31:0]	left_channel_audio_out;
 wire		[31:0]	right_channel_audio_out;
 wire				write_audio_out;
-wire [6:0]wave_out;
+wire [6:0] wave_out;
 
 // Internal Registers
 
@@ -102,7 +101,7 @@ ALUcontroller a(CLOCK_50, KEY[0], 1'b1, 4'b0000, 3'b100, 6'b111111, 6'b111111, 6
 
 wire [31:0] wave;
     
-assign wave = {wave_out, 26'b0};
+assign wave = {wave_out, 25'b0};
 
 
 assign read_audio_in			= audio_in_available & audio_out_allowed;

@@ -5,7 +5,7 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, amp_plus_plus, amp_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
 
     // setting up ALUcontroller
-    
+    // inputs needed for this!
     // wire inputs to ALUcontroller
     wire note_in;
     wire [3:0] note;
@@ -81,7 +81,11 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     ALUcontroller a(clk, reset, note_in, note, octave, amplitude, attack, decay, sustain, rel, wave_out);
 
     // setting up audio ouput
-
+//call the audio module with an input called wave_out and add all of the inputs and outputs from that necessarry into 
+//this module
+    // DE1_SoC_Audio_Example (s)
+//make another module that inputs all of his inputs
+//and use each variable accordingly
     // setting up video ouput
 
     // setting up HEX and LEDR output
