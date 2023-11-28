@@ -4,16 +4,16 @@ by Candice, Tara & Adam
 
 Todo:
 
-- [ ] Make ADSR and wave outputs 32 bits
 - [ ] Audio output
 - [ ] Keyboard input
-- [x] Add amplitude input to all wave generators
 - [ ] Generate sine wave
 - [ ] Play multiple notes at once
-- [x] ADSR envelope
 - [ ] Compression (clipping)
 - [ ] Overdrive (signal gain + clipping)
 - [ ] Map FX (ADRS, Compression, etc) to keyboard and hex displays
+- [x] Make ADSR and wave outputs 32 bits
+- [x] ADSR envelope
+- [x] Add amplitude input to all wave generators
 
 Fun, but not needed:
 
