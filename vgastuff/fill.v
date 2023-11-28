@@ -45,7 +45,7 @@ wire done;
 wire writeEn;
 wire [3:0]state;
 
-part2 a(.iClock(CLOCK_50),
+vgadisplay a(.iClock(CLOCK_50),
 .iResetn(KEY[0]),
 .iPlotBox(~KEY[1]),
 .iLoadX(~KEY[3]),
