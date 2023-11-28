@@ -3,9 +3,10 @@ by Candice, Tara & Adam
 
 Todo:
 
+- [ ] Make ADSR and wave outputs 32 bits
 - [ ] Audio output
 - [ ] Keyboard input
-- [ ] Add amplitude input to all wave generators
+- [x] Add amplitude input to all wave generators
 - [ ] Generate sine wave
 - [ ] Play multiple notes at once
 - [x] ADSR envelope
