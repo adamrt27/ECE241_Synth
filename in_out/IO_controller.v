@@ -10,14 +10,14 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     wire note_in;
     wire [3:0] note;
     wire [2:0] octave;
-    wire [5:0] amplitude;
-    wire [5:0] attack;
-    wire [5:0] decay;
-    wire [5:0] sustain;
-    wire [5:0] rel;
+    wire [30:0] amplitude;
+    wire [30:0] attack;
+    wire [30:0] decay;
+    wire [30:0] sustain;
+    wire [30:0] rel;
 
     // wire ouputs from ALUcontroller
-    wire [6:0] wave_out;
+    wire [31:0] wave_out;
 
     // wire inputs for changing "slider" values (ie values that are not set absolutely, but adjusted via slider, eg octave, amplitude)
     wire octave_plus_plus; // if 1, increment octave by 1, else dont change 
@@ -33,39 +33,40 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     
     // the following values are stored in reg so they can be changed via +/- buttons instead of absolute values
     reg [2:0] octave_reg;
-    reg [5:0] amplitude_reg;
-    reg [5:0] attack_reg;
-    reg [5:0] decay_reg;
-    reg [5:0] sustain_reg;
-    reg [5:0] release_reg;
+    reg [30:0] amplitude_reg;
+    reg [30:0] attack_reg;
+    reg [30:0] decay_reg;
+    reg [30:0] sustain_reg;
+    reg [30:0] release_reg;
 
     always@(posedge clk) begin
         if (!reset) begin // setting defaults
                           // octave: 4 (if note is 0 then plays middle c)
-                          // amplitude: 63 (max amplitude)
-                          // attack: 63 (plays instantly)
+                          // amplitude: max (max amplitude)
+                          // attack: max (plays instantly)
                           // decay: 0 (no decay)
-                          // sustain: 63 (same as max amplitude)
-                          // release: 63 (no release)
+                          // sustain: max (same as max amplitude)
+                          // release: max (no release)
             octave_reg <= 3'd4;
-            amplitude_reg <= 6'd63;
-            attack_reg <= 6'd63;
+            amplitude_reg <= 1 << 32; // setting to max value
+            attack_reg <= 1 << 32;
             decay_reg <= 0;
-            sustain_reg <= 6'd63;
-            release_reg <= 6'd63;
+            sustain_reg <= 1 << 32;
+            release_reg <= 1 << 32;
         end
         else // updating values of octave, amplitude, and ADSR
             octave_reg <= octave_reg + octave_plus_plus - octave_minus_minus;
-            amplitude_reg <= amplitude_reg + amp_plus_plus - amp_minus_minus;
+            amplitude_reg <= amplitude_reg + (amp_plus_plus * (1 << 24)) - (amp_minus_minus * (1 << 24));
+            // purpose of 1 << 24 is to make each setting essentially 8 bits, instead of 32.
             case (ADSR_selector) 
                 0: // attack
-                    attack_reg <= attack_reg + ADSR_plus_plus - ADSR_minus_minus;
+                    attack_reg <= attack_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
                 1: // decay
-                    decay_reg <= decay_reg + ADSR_plus_plus - ADSR_minus_minus;
+                    decay_reg <= decay_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
                 2: // sustain
-                    sustain_reg <= sustain_reg + ADSR_plus_plus - ADSR_minus_minus;
+                    sustain_reg <= sustain_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
                 3: // release
-                    release_reg <= release_reg + ADSR_plus_plus - ADSR_minus_minus;
+                    release_reg <= release_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
             endcase
     end
 

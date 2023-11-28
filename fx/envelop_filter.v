@@ -3,13 +3,13 @@ module envelop_filter(clk, reset, note_in, attack, decay, sustain, rel, max_ampl
     input clk; // clock
     input reset; // low active reset
     input note_in; // tells use when the note is on
-    input [5:0] attack; // how much attack
-    input [5:0] decay;
-    input [5:0] sustain;
-    input [5:0] rel; // release, but cant be called that cuz its a keyword
-    input [5:0] max_amplitude; // the max amplitude (basically the current volume)
+    input [30:0] attack; // how much attack
+    input [30:0] decay;
+    input [30:0] sustain;
+    input [30:0] rel; // release, but cant be called that cuz its a keyword
+    input [30:0] max_amplitude; // the max amplitude (basically the current volume)
 
-    output reg [5:0] cur_amplitude; // output multiplier that changes wave shape
+    output reg [30:0] cur_amplitude; // output multiplier that changes wave shape
 
     // CONTROL PATH
 
