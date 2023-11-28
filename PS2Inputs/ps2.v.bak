@@ -11,25 +11,20 @@ inout				PS2_DAT,
     output reg amp_minus_minus,
     output reg amp_plus_plus
     );
-    wire [7:0] eightbit;//this was changed from original
-	wire temp_note_in;
-	 
-    PS2_Demo a(.CLOCK_50(CLOCK_50), .KEY(KEY), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .ps2_key_pressed(temp_note_in), 
-    .last_data_received(eightbit));
-	 
+    wire [7:0] 8bit;//this was changed from original
 
+    PS2_Demo a(.CLOCK_50(CLOCK_50), .KEY(KEY), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .ps2_key_pressed(note_in), 
+    .last_data_received(8bit));
 
     always@(posedge PS2_CLK) begin
-	 	 note_in = temp_note_in;
-        if (~KEY[0]) begin // setting defaults
+        if (!KEY[0]) begin // setting defaults
             note <= 4'b0000;
             octave_minus_minus <= 0;
             octave_plus_plus <= 0;
             note_in <= 0;
         end
         else // updating values of octave, amplitude, and ADSR
-				note_in <= 0;
-            case (eightbit) 
+            case (8bit) 
                 8'h1C: //c letter a
                 begin
                     note <= 4'b0000;
@@ -93,22 +88,22 @@ inout				PS2_DAT,
                 8'h1A: //oxtavminusminus is z
                 begin
                     octave_minus_minus <= 1;
-                    note_in <= 0;
+                    note_in <= 1;
                 end
                 8'h22: //oxtavplusplus is x
                 begin
                     octave_plus_plus <= 1;
-                    note_in <= 0;
+                    note_in <= 1;
                 end
                 8'h16: //ampminus is 1
                 begin
                     amp_minus_minus <= 1;
-                    note_in <= 0;
+                    note_in <= 1;
                 end
                 8'h1E: //ampminus is 2
                 begin
                     amp_plus_plus <= 1;
-                    note_in <= 0;
+                    note_in <= 1;
                 end
             endcase
     end

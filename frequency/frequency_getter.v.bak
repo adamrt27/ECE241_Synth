@@ -121,6 +121,6 @@ module frequency_getter(input [3:0]note,
 	end 
 
     assign num = note + (octave * 12);
-    assign frequency = TABLE[num];
+    assign frequency = TABLE[note*octave];
     
 endmodule

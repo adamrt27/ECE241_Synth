@@ -1,54 +1,28 @@
 module IO_controller(input CLOCK_50, input [3:0] KEY, 
-	input				AUD_ADCDAT,
+input				AUD_ADCDAT,
 
-	// Bidirectionals (aduio)
-	inout				AUD_BCLK,
-	inout				AUD_ADCLRCK,
-	inout				AUD_DACLRCK,
+// Bidirectionals (aduio)
+inout				AUD_BCLK,
+inout				AUD_ADCLRCK,
+inout				AUD_DACLRCK,
 
-	inout				FPGA_I2C_SDAT,
+inout				FPGA_I2C_SDAT,
 
-	// Outputs(audio)
-	output				AUD_XCK,
-	output				AUD_DACDAT,
+// Outputs(audio)
+output				AUD_XCK,
+output				AUD_DACDAT,
 
-	output				FPGA_I2C_SCLK,
-	//bidirectionals(ps2)
-	inout				PS2_CLK,
-	inout				PS2_DAT,
+output				FPGA_I2C_SCLK,
+//bidirectionals(ps2)
+inout				PS2_CLK,
+inout				PS2_DAT,
 
-	output [6:0] HEX0, 
-	output [6:0] HEX1, 
-	output [6:0] HEX2, 
-	output [6:0] HEX3, 
-	output [6:0] HEX4, 
-	output [6:0] HEX5, 
-	output [7:0] LEDR);
-	
-	
-	// wires for general stuff
+output [6:0] HEX, output [7:0] LEDR);
     wire clk;
     assign clk = CLOCK_50;
     wire reset;
     assign reset = KEY[0];
-	 
-	 
     // setting up PS2 inputs
-	 
-			 //call the PS2 inputs module
-		ps2 p0(.CLOCK_50(CLOCK_50),
-		.KEY(KEY),
-
-		// Bidirectionals
-		.PS2_CLK(PS2_CLK),
-		.PS2_DAT(PS2_DAT),
-			 .note(note),
-			 .octave_minus_minus(octave_minus_minus),
-			 .octave_plus_plus(octave_plus_plus),
-			 .note_in(note_in), 
-			 .amp_minus_minus(amp_minus_minus),
-			 .amp_plus_plus(amp_plus_plus)
-			 );
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, amp_plus_plus, amp_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
 
@@ -89,7 +63,7 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
     reg [30:0] release_reg;
 
     always@(posedge clk) begin
-        if (~reset) begin // setting defaults
+        if (!reset) begin // setting defaults
                           // octave: 4 (if note is 0 then plays middle c)
                           // amplitude: max (max amplitude)
                           // attack: max (plays instantly)
@@ -97,25 +71,25 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
                           // sustain: max (same as max amplitude)
                           // release: max (no release)
             octave_reg <= 3'd4;
-            amplitude_reg <= 31'd1073741824; // setting to max value
-            attack_reg <= 31'd1073741824;
+            amplitude_reg <= 1 << 32; // setting to max value
+            attack_reg <= 1 << 32;
             decay_reg <= 0;
-            sustain_reg <= 31'd1073741824;
-            release_reg <= 31'd1073741824;
+            sustain_reg <= 1 << 32;
+            release_reg <= 1 << 32;
         end
         else // updating values of octave, amplitude, and ADSR
             octave_reg <= octave_reg + octave_plus_plus - octave_minus_minus;
-            amplitude_reg <= amplitude_reg + (amp_plus_plus * (8388608)) - (amp_minus_minus * (8388608));
+            amplitude_reg <= amplitude_reg + (amp_plus_plus * (1 << 24)) - (amp_minus_minus * (1 << 24));
             // purpose of 1 << 24 is to make each setting essentially 8 bits, instead of 32.
             case (ADSR_selector) 
                 0: // attack
-                    attack_reg <= attack_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    attack_reg <= attack_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
                 1: // decay
-                    decay_reg <= decay_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    decay_reg <= decay_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
                 2: // sustain
-                    sustain_reg <= sustain_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    sustain_reg <= sustain_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
                 3: // release
-                    release_reg <= release_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    release_reg <= release_reg + (ADSR_plus_plus * (1 << 24)) - (ADSR_minus_minus * (1 << 24));
             endcase
     end
 
@@ -127,12 +101,25 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
     assign sustain = sustain_reg;
     assign rel = release_reg;
 
+//call the PS2 inputs module
+ps2 p0(.CLOCK_50(CLOCK_50),
+.KEY(KEY),
 
+// Bidirectionals
+.PS2_CLK(PS2_CLK),
+.PS2_DAT(PS2_DAT),
+    .note(note),
+    .octave_minus_minus(octave_minus_minus),
+    .octave_plus_plus(octave_plus_plus),
+    .note_in(note_in), 
+    .amp_minus_minus(amp_minus_minus),
+    .amp_plus_plus(amp_plus_plus)
+    );
 
-ALUcontroller a(clk, reset, note_in, note, octave, amplitude, attack, decay, sustain, rel, wave_out);
+    ALUcontroller a(clk, reset, note_in, note, octave, amplitude, attack, decay, sustain, rel, wave_out);
 
     // setting up audio ouput
-     DE1_SoC_Audio_Example aud(
+     DE1_SoC_Audio_Example a(
 	// Inputs
 	.CLOCK_50(CLOCK_50),
 	.KEY(KEY),
@@ -168,44 +155,41 @@ ALUcontroller a(clk, reset, note_in, note, octave, amplitude, attack, decay, sus
     // we want octave on hex0, amplitude on hex1, attack on hex2, decay on hex3, sustain on hex4, release on hex5
 
     // octave
-    hex_decoder hex_octave(octave, HEX0);
+    hex_decoder hex_octave(octave, HEX[0]);
 
     // amplitude, have to make into a 4 bit, so shift by two bits right
     wire [3:0] amplitude_hex;
-    assign amplitude_hex = amplitude[30:27];
+    assign amplitude_hex = amplitude >> 2;
 
-    hex_decoder hex_amplitude(amplitude_hex, HEX1);
+    hex_decoder hex_amplitude(amplitude_hex, HEX[1]);
 
     // attack, same as amplitude
     wire [3:0] attack_hex;
-    assign attack_hex = attack[30:27];
+    assign attack_hex = attack >> 2;
 
-    hex_decoder hex_attack(attack_hex, HEX2);
+    hex_decoder hex_amplitude(attack_hex, HEX[2]);
 
     // decay, same as amplitude
     wire [3:0] decay_hex;
-    assign decay_hex = decay[30:27];
+    assign decay_hex = decay >> 2;
 
-    hex_decoder hex_decay(decay_hex, HEX3);
+    hex_decoder hex_amplitude(decay_hex, HEX[3]);
 
     // sustain, same as amplitude
     wire [3:0] sustain_hex;
-    assign sustain_hex = sustain[30:27];
+    assign sustain_hex = sustain >> 2;
 
-    hex_decoder hex_sustain(sustain_hex, HEX4);
+    hex_decoder hex_amplitude(sustain_hex, HEX[4]);
 
     // release, same as amplitude
     wire [3:0] rel_hex;
-    assign rel_hex = rel[30:27];
+    assign rel_hex = rel >> 2;
 
-    hex_decoder hex_release(rel_hex, HEX5);
+    hex_decoder hex_amplitude(rel_hex, HEX[5]);
 
     // LEDR
     // set note_in to LEDR 0, and note to LEDR 1-4 for testing
     assign LEDR[0] = note_in;
     assign LEDR[4:1] = note;
-	 
-	 
-	 assign LEDR[7] = reset;
 
 endmodule

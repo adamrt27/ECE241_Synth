@@ -62,6 +62,7 @@ wire				audio_out_allowed;
 wire		[31:0]	left_channel_audio_out;
 wire		[31:0]	right_channel_audio_out;
 wire				write_audio_out;
+wire [6:0] wave_out;
 
 // Internal Registers
 
@@ -106,8 +107,8 @@ assign wave = wave_out;
 
 assign read_audio_in			= audio_in_available & audio_out_allowed;
 
-assign left_channel_audio_out	= wave_out;//deleted + sound
-assign right_channel_audio_out	= wave_out;
+assign left_channel_audio_out	= wave;//deleted + sound
+assign right_channel_audio_out	= wave;
 assign write_audio_out			= audio_in_available & audio_out_allowed;
 
 /*****************************************************************************
