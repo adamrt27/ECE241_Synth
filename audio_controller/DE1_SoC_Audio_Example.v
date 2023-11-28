@@ -3,7 +3,7 @@ module DE1_SoC_Audio_Example (
 	// Inputs
 	CLOCK_50,
 	KEY,
-
+	wave_out,
 	AUD_ADCDAT,
 	// Bidirectionals
 	AUD_BCLK,
@@ -32,6 +32,7 @@ module DE1_SoC_Audio_Example (
 input				CLOCK_50;
 input		[3:0]	KEY;
 input		[3:0]	SW;
+input [31:0] wave_out;
 
 input				AUD_ADCDAT;
 
@@ -95,13 +96,13 @@ assign delay = {SW[3:0], 15'd3000};
 
 wire [31:0] sound = (SW == 0) ? 0 : snd ? 32'd10000000 : -32'd10000000;
 
-ALUcontroller a(CLOCK_50, KEY[0], 1'b1, 4'b0000, 3'b100, 6'b111111, 6'b111111, 6'b000000, 6'b000000, 6'b000000, wave_out);
+//ALUcontroller a(CLOCK_50, KEY[0], 1'b1, 4'b0000, 3'b100, 6'b111111, 6'b111111, 6'b000000, 6'b000000, 6'b000000, wave_out);
 //feed wave_out into audio controller but before that change wave_out into a 32 bit input because wave_out is currently 7bits add 0's
 //take in wave out and feed it in the audio out
 
 wire [31:0] wave;
     
-assign wave = {wave_out, 25'b0};
+assign wave = wave_out;
 
 
 assign read_audio_in			= audio_in_available & audio_out_allowed;

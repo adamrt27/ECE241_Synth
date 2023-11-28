@@ -1,5 +1,27 @@
-module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR);
+module IO_controller(input CLOCK_50, input [3:0] KEY, 
+input				AUD_ADCDAT,
 
+// Bidirectionals (aduio)
+inout				AUD_BCLK,
+inout				AUD_ADCLRCK,
+inout				AUD_DACLRCK,
+
+inout				FPGA_I2C_SDAT,
+
+// Outputs(audio)
+output				AUD_XCK,
+output				AUD_DACDAT,
+
+output				FPGA_I2C_SCLK,
+//bidirectionals(ps2)
+inout				PS2_CLK,
+inout				PS2_DAT,
+
+output [6:0] HEX, output [7:0] LEDR);
+    wire clk;
+    assign clk = CLOCK_50;
+    wire reset;
+    assign reset = KEY[0];
     // setting up PS2 inputs
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, amp_plus_plus, amp_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
@@ -7,6 +29,7 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     // setting up ALUcontroller
     // inputs needed for this!
     // wire inputs to ALUcontroller
+    
     wire note_in;
     wire [3:0] note;
     wire [2:0] octave;
@@ -79,9 +102,43 @@ module IO_controller(input clk, input reset, output [6:0] HEX, output [7:0] LEDR
     assign rel = release_reg;
 
 //call the PS2 inputs module
+ps2 p0(.CLOCK_50(CLOCK_50),
+.KEY(KEY),
+
+// Bidirectionals
+.PS2_CLK(PS2_CLK),
+.PS2_DAT(PS2_DAT),
+    .note(note),
+    .octave_minus_minus(octave_minus_minus),
+    .octave_plus_plus(octave_plus_plus),
+    .note_in(note_in), 
+    .amp_minus_minus(amp_minus_minus),
+    .amp_plus_plus(amp_plus_plus)
+    );
 
     ALUcontroller a(clk, reset, note_in, note, octave, amplitude, attack, decay, sustain, rel, wave_out);
+
     // setting up audio ouput
+     DE1_SoC_Audio_Example a(
+	// Inputs
+	.CLOCK_50(CLOCK_50),
+	.KEY(KEY),
+	.wave_out(wave_out),
+	.AUD_ADCDAT(AUD_ADCDAT),
+	// Bidirectionals
+	.AUD_BCLK(AUD_BCLK),
+	.AUD_ADCLRCK(AUD_ADCLRCK),
+	.AUD_DACLRCK(AUD_DACLRCK),
+
+	.FPGA_I2C_SDAT(FPGA_I2C_SDAT),
+
+	// Outputs
+	.AUD_XCK(AUD_XCK),
+	.AUD_DACDAT(AUD_DACDAT),
+
+	.FPGA_I2C_SCLK(FPGA_I2C_SCLK)
+    //SW was deleted
+);
 //call the audio module with an input called wave_out and add all of the inputs and outputs from that necessarry into 
 //this module
     // DE1_SoC_Audio_Example (s)

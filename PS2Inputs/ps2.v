@@ -1,9 +1,9 @@
-module ps2(CLOCK_50,
-	KEY,
+module ps2(input CLOCK_50,
+input		[3:0]	KEY,
 
-	// Bidirectionals
-	PS2_CLK,
-	PS2_DAT,
+// Bidirectionals
+inout				PS2_CLK,
+inout				PS2_DAT,
     output reg [3:0] note,
     output reg octave_minus_minus,
     output reg octave_plus_plus,
@@ -17,7 +17,7 @@ module ps2(CLOCK_50,
     .last_data_received(8bit));
 
     always@(posedge PS2_CLK) begin
-        if (!KEY) begin // setting defaults
+        if (!KEY[0]) begin // setting defaults
             note <= 4'b0000;
             octave_minus_minus <= 0;
             octave_plus_plus <= 0;
