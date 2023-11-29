@@ -34,9 +34,7 @@ module IO_controller(
 	
 	
 	// wires for general stuff
-
-    output [6:0] HEX, output [7:0] LEDR);
-
+    
     wire clk;
     assign clk = CLOCK_50;
     wire reset;
