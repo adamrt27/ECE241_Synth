@@ -117,7 +117,7 @@ assign write_audio_out			= audio_in_available & audio_out_allowed;
 Audio_Controller Audio_Controller (
 	// Inputs
 	.CLOCK_50						(CLOCK_50),
-	.reset						(~KEY[0]),
+	.reset						(~KEY[0]),//active low reset
 
 	.clear_audio_in_memory		(),
 	.read_audio_in				(read_audio_in),

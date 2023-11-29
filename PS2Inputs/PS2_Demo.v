@@ -98,7 +98,7 @@ assign HEX7 = 7'h7F;
 PS2_Controller PS2 (
 	// Inputs
 	.CLOCK_50				(CLOCK_50),
-	.reset				(~KEY[0]),
+	.reset				(~KEY[0]),//active low reset
 
 	// Bidirectionals
 	.PS2_CLK			(PS2_CLK),

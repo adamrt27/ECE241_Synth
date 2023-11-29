@@ -10,6 +10,7 @@ inout				PS2_DAT,
     output reg note_in, 
     output reg amp_minus_minus,
     output reg amp_plus_plus
+    //[2:0]ADSR: if you click key 1 it gives 0, 2 gives you 1, 3 gives you 2 etc.
     );
     wire [7:0] eightbit;//this was changed from original
 	wire temp_note_in;
