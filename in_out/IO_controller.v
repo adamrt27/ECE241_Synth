@@ -17,7 +17,6 @@ module IO_controller(
 	output				AUD_XCK,
 	output				AUD_DACDAT,
 
-<<<<<<< HEAD
 	output				FPGA_I2C_SCLK,
 	// bidirectionals(ps2)
 	inout				PS2_CLK,
@@ -35,10 +34,9 @@ module IO_controller(
 	
 	
 	// wires for general stuff
-=======
-output [6:0] HEX, output [7:0] LEDR);
 
->>>>>>> 7a408ee (s)
+    output [6:0] HEX, output [7:0] LEDR);
+
     wire clk;
     assign clk = CLOCK_50;
     wire reset;
