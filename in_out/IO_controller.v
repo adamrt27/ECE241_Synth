@@ -1,7 +1,12 @@
-module IO_controller(input CLOCK_50, input [3:0] KEY, 
+module IO_controller(
+    // general inputs
+    input CLOCK_50, 
+    input [3:0] KEY, 
+
+    // Inputs (audio & ps2)
 	input				AUD_ADCDAT,
 
-	// Bidirectionals (aduio)
+	// Bidirectionals (audio)
 	inout				AUD_BCLK,
 	inout				AUD_ADCLRCK,
 	inout				AUD_DACLRCK,
@@ -13,17 +18,19 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
 	output				AUD_DACDAT,
 
 	output				FPGA_I2C_SCLK,
-	//bidirectionals(ps2)
+	// bidirectionals(ps2)
 	inout				PS2_CLK,
 	inout				PS2_DAT,
 
+    // hex display & lights
 	output [6:0] HEX0, 
 	output [6:0] HEX1, 
 	output [6:0] HEX2, 
 	output [6:0] HEX3, 
 	output [6:0] HEX4, 
 	output [6:0] HEX5, 
-	output [7:0] LEDR);
+	output [7:0] LEDR
+    );
 	
 	
 	// wires for general stuff
@@ -32,26 +39,27 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
     wire reset;
     assign reset = KEY[0];
 	 
-	 
+	// ************************************************************************************************************************************ 
     // setting up PS2 inputs
 	 
-			 //call the PS2 inputs module
-		ps2 p0(.CLOCK_50(CLOCK_50),
-		.KEY(KEY),
+    //call the PS2 inputs module
+    ps2 p0(.CLOCK_50(CLOCK_50),
+    .KEY(KEY),
 
-		// Bidirectionals
-		.PS2_CLK(PS2_CLK),
-		.PS2_DAT(PS2_DAT),
-			 .note(note),
-			 .octave_minus_minus(octave_minus_minus),
-			 .octave_plus_plus(octave_plus_plus),
-			 .note_in(note_in), 
-			 .amp_minus_minus(amp_minus_minus),
-			 .amp_plus_plus(amp_plus_plus)
-			 );
+    // Bidirectionals
+    .PS2_CLK(PS2_CLK),
+    .PS2_DAT(PS2_DAT),
+            .note(note),
+            .octave_minus_minus(octave_minus_minus),
+            .octave_plus_plus(octave_plus_plus),
+            .note_in(note_in), 
+            .amp_minus_minus(amp_minus_minus),
+            .amp_plus_plus(amp_plus_plus)
+    );
 
-    // feed into: note_in, note, octave_plus_plus, octave_minus_minus, amp_plus_plus, amp_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
+    // feed into: note_in, note, octave_plus_plus, octave_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
 
+    // ************************************************************************************************************************************
     // setting up ALUcontroller
     // inputs needed for this!
     // wire inputs to ALUcontroller
@@ -73,10 +81,11 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
     wire octave_minus_minus; // if 1 decrease octave by 1, else dont change
     wire amp_plus_plus; // if 1 increase amplitude by 1, else dont change
     wire amp_minus_minus; // if 1 decrease amplitude by 1
-    wire [1:0] ADSR_selector; // if 0 - change attack
-                              //    1 - change decay
-                              //    2 - change sustain
-                              //    3 - change release
+    wire [2:0] ADSR_selector; // if 0 - change amplitude/volume
+                              //    1 - change attack
+                              //    2 - change decay
+                              //    3 - change sustain
+                              //    4 - change release
     wire ADSR_plus_plus; // if 1, increment selected ADSR by 1
     wire ADSR_minus_minus;  // if 1, decrease selected ADSR by 1
     
@@ -108,13 +117,15 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
             amplitude_reg <= amplitude_reg + (amp_plus_plus * (8388608)) - (amp_minus_minus * (8388608));
             // purpose of 1 << 24 is to make each setting essentially 8 bits, instead of 32.
             case (ADSR_selector) 
-                0: // attack
+                0: // amplitude
+                    amplitude_reg <= amplitude_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                1: // attack
                     attack_reg <= attack_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
-                1: // decay
+                2: // decay
                     decay_reg <= decay_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
-                2: // sustain
+                3: // sustain
                     sustain_reg <= sustain_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
-                3: // release
+                4: // release
                     release_reg <= release_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
             endcase
     end
@@ -127,41 +138,52 @@ module IO_controller(input CLOCK_50, input [3:0] KEY,
     assign sustain = sustain_reg;
     assign rel = release_reg;
 
+    // loading everything into ALUcontroller
+    ALUcontroller a(.clk(clk), 
+        .reset(reset), 
+        .note_in(note_in), 
+        .note(note), 
+        .octave(octave), 
+        .amplitude(amplitude), 
+        .attack(attack), 
+        .decay(decay), 
+        .sustain(sustain), 
+        .rel(rel), 
+        .wave_out(wave_out));
 
-
-ALUcontroller a(clk, reset, note_in, note, octave, amplitude, attack, decay, sustain, rel, wave_out);
-
+    // ************************************************************************************************************************************
     // setting up audio ouput
-     DE1_SoC_Audio_Example aud(
-	// Inputs
-	.CLOCK_50(CLOCK_50),
-	.KEY(KEY),
-	.wave_out(wave_out),
-	.AUD_ADCDAT(AUD_ADCDAT),
-	// Bidirectionals
-	.AUD_BCLK(AUD_BCLK),
-	.AUD_ADCLRCK(AUD_ADCLRCK),
-	.AUD_DACLRCK(AUD_DACLRCK),
+    DE1_SoC_Audio_Example aud(
+        // Inputs
+        .CLOCK_50(CLOCK_50),
+        .KEY(KEY),
+        .wave_out(wave_out),
+        .AUD_ADCDAT(AUD_ADCDAT),
+        // Bidirectionals
+        .AUD_BCLK(AUD_BCLK),
+        .AUD_ADCLRCK(AUD_ADCLRCK),
+        .AUD_DACLRCK(AUD_DACLRCK),
 
-	.FPGA_I2C_SDAT(FPGA_I2C_SDAT),
+        .FPGA_I2C_SDAT(FPGA_I2C_SDAT),
 
-	// Outputs
-	.AUD_XCK(AUD_XCK),
-	.AUD_DACDAT(AUD_DACDAT),
+        // Outputs
+        .AUD_XCK(AUD_XCK),
+        .AUD_DACDAT(AUD_DACDAT),
 
-	.FPGA_I2C_SCLK(FPGA_I2C_SCLK)
-    //SW was deleted
-);
-//call the audio module with an input called wave_out and add all of the inputs and outputs from that necessarry into 
-//this module
+        .FPGA_I2C_SCLK(FPGA_I2C_SCLK)
+        //SW was deleted
+    );
+    //call the audio module with an input called wave_out and add all of the inputs and outputs from that necessarry into 
+    //this module
     // DE1_SoC_Audio_Example (s)
 
-//
+    //make another module that inputs all of his inputs
+    //and use each variable accordingly
 
-//make another module that inputs all of his inputs
-//and use each variable accordingly
+    // ************************************************************************************************************************************
     // setting up video ouput
 
+    // ************************************************************************************************************************************
     // setting up HEX and LEDR output
 
     // HEX
