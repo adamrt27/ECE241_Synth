@@ -19,7 +19,7 @@ inout				PS2_DAT,
     .last_data_received(eightbit));
 	 
 
-
+   
     always@(posedge PS2_CLK) begin
 	 	 note_in = temp_note_in;
         if (~KEY[0]) begin // setting defaults
@@ -101,15 +101,58 @@ inout				PS2_DAT,
                     octave_plus_plus <= 1;
                     note_in <= 0;
                 end
-                8'h16: //ampminus is 1
+                8'h16: //ASDR1 is 0 which is volume key 1(number)
                 begin
-                    amp_minus_minus <= 1;
+                    ADSR_selector <= 3'b000;
                     note_in <= 0;
                 end
-                8'h1E: //ampminus is 2
+                8'h1E: //ASDR2 is 1 which is attack which is key 2(number)
                 begin
-                    amp_plus_plus <= 1;
+                    ADSR_selector <= 3'b001;
                     note_in <= 0;
+                end
+                8'h26: //D which is key 3
+                begin
+                    ADSR_selector <= 3'b010;
+                    note_in <= 0;
+                end
+                8'h25: //S which is key 4
+                begin
+                    ADSR_selector <= 3'b011;
+                    note_in <= 0;
+                end
+                8'h2E: //R which is key 5
+                begin
+                    ADSR_selector <= 3'b100;
+                    note_in <= 0;
+                end
+                8'h21: //c which is key minus for ADSR
+                begin
+                    note_in <= 0;
+                    if(ADSR_selector == 3'b000)
+                        amp_minus_minus <= 1;
+                    if(ADSR_selector == 3'b001)
+                        ADSR_minus_minus <= 1;
+                    if(ADSR_selector == 3'b010)
+                        ADSR_minus_minus <= 1;
+                    if(ADSR_selector == 3'b011)
+                        ADSR_minus_minus <= 1;
+                    if(ADSR_selector == 3'b100)
+                        ADSR_minus_minus <= 1;
+                end
+                8'h2A: //v which is key plus for ADSR
+                begin
+                    note_in <= 0;
+                    if(ADSR_selector == 3'b000)
+                        amp_plus_plus <= 1;
+                    if(ADSR_selector == 3'b001)
+                        ADSR_plus_plus <= 1;
+                    if(ADSR_selector == 3'b010)
+                        ADSR_plus_plus <= 1;
+                    if(ADSR_selector == 3'b011)
+                        ADSR_plus_plus <= 1;
+                    if(ADSR_selector == 3'b100)
+                        ADSR_plus_plus <= 1;
                 end
             endcase
     end
