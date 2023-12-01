@@ -27,10 +27,17 @@ inout				PS2_DAT,
             note <= 4'b0000;
             octave_minus_minus <= 0;
             octave_plus_plus <= 0;
+            ADSR_minus_minus <= 0;
+            ADSR_plus_plus <= 0;
+            ADSR_selector <= 0;
             note_in <= 0;
         end
         else // updating values of octave, amplitude, and ADSR
-				note_in <= 0;
+            note_in <= 0;
+            octave_minus_minus <= 0;
+            octave_plus_plus <= 0;
+            ADSR_minus_minus <= 0;
+            ADSR_plus_plus <= 0;
             case (eightbit) 
                 8'h1C: //c letter a
                 begin
@@ -130,30 +137,12 @@ inout				PS2_DAT,
                 8'h21: //c which is key minus for ADSR
                 begin
                     note_in <= 0;
-                    if(ADSR_selector == 3'b000)
-                        amp_minus_minus <= 1;
-                    if(ADSR_selector == 3'b001)
-                        ADSR_minus_minus <= 1;
-                    if(ADSR_selector == 3'b010)
-                        ADSR_minus_minus <= 1;
-                    if(ADSR_selector == 3'b011)
-                        ADSR_minus_minus <= 1;
-                    if(ADSR_selector == 3'b100)
-                        ADSR_minus_minus <= 1;
+                    ADSR_minus_minus <= 1;
                 end
                 8'h2A: //v which is key plus for ADSR
                 begin
                     note_in <= 0;
-                    if(ADSR_selector == 3'b000)
-                        amp_plus_plus <= 1;
-                    if(ADSR_selector == 3'b001)
-                        ADSR_plus_plus <= 1;
-                    if(ADSR_selector == 3'b010)
-                        ADSR_plus_plus <= 1;
-                    if(ADSR_selector == 3'b011)
-                        ADSR_plus_plus <= 1;
-                    if(ADSR_selector == 3'b100)
-                        ADSR_plus_plus <= 1;
+                    ADSR_plus_plus <= 1;
                 end
                 
             endcase
