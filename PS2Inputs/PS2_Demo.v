@@ -47,7 +47,7 @@ output		[6:0]	HEX4;
 output		[6:0]	HEX5;
 output		[6:0]	HEX6;
 output		[6:0]	HEX7;
-output reg [7:0] last_data_received;
+output reg [7:0] ps2_key_data;
 output ps2_key_pressed;
 
 /*****************************************************************************
@@ -55,11 +55,11 @@ output ps2_key_pressed;
  *****************************************************************************/
 
 // Internal Wires
-wire		[7:0]	ps2_key_data;
+//wire		[7:0]	ps2_key_data;
 //wire				ps2_key_pressed;
 
 // Internal Registers
-//reg			[7:0]	last_data_received;
+reg			[7:0]	last_data_received;
 
 // State Machine Registers
 
