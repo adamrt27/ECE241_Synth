@@ -73,22 +73,43 @@ module IO_controller(
 	wire done;
 	wire writeEn;
 	wire [3:0]state;
-	vgadisplay v0 (.iClock(CLOCK_50)
-		       .iResetn(reset)
-		       .iPlotBox(note),
-		       .iLoadX(PS2_DAT),
-		       .oColour(colour),
-		       .oPlot(writeEn),
-		       .oX(x),
-		       .oY(y),
-		       .oDone(done),
-                       .state(state)
-		       .note(note))
-		       .octave_minus_minus(octave_minus_minus),
-            	       .octave_plus_plus(octave_plus_plus),
-           	       .note_in(note_in), 
-           	       .amp_minus_minus(amp_minus_minus),
-           	       .amp_plus_plus(amp_plus_plus);
+	vgadisplay v0(
+		.iClock(CLOCK_50)
+		.iResetn(reset)
+		.iPlotBox(note),
+		.iLoadX(PS2_DAT),
+		.oColour(colour),
+		.oPlot(writeEn),
+		.oX(x),
+		.oY(y),
+		.oDone(done),
+                .state(state)
+		.note(note)
+		.octave_minus_minus(octave_minus_minus),
+            	.octave_plus_plus(octave_plus_plus),
+           	.note_in(note_in), 
+           	.amp_minus_minus(amp_minus_minus),
+		.amp_plus_plus(amp_plus_plus));
+	
+	vga_adapter v1(
+		.resetn(resetn),
+		.clock(CLOCK_50),
+		.colour(colour),
+		.x(x),
+		.y(y),
+		.plot(writeEn),
+		.VGA_R(VGA_R),
+		.VGA_G(VGA_G),
+		.VGA_B(VGA_B),
+		.VGA_HS(VGA_HS),
+		.VGA_VS(VGA_VS),
+		.VGA_BLANK(VGA_BLANK_N),
+		.VGA_SYNC(VGA_SYNC_N),
+		.VGA_CLK(VGA_CLK));
+		defparam VGA.RESOLUTION = "320x240";
+		defparam VGA.MONOCHROME = "FALSE";
+		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+		defparam VGA.BACKGROUND_IMAGE = "piano.mif";
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
 
