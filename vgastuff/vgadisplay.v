@@ -182,7 +182,7 @@ module datapath(
 wire [8:0] vga_x_position;
 wire [7:0] vga_y_position;
 
-// Logic to determine VGA pixel coordinates based on note
+//determine VGA pixel coordinates based on note
 always @* begin
     case (note)
         4'b0000: begin
