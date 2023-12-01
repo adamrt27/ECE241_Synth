@@ -1,9 +1,17 @@
 
-module vgadisplay(iResetn,iPlotBox,iLoadX,iClock,oX,oY,oColour,oPlot,oDone, state);
+module vgadisplay(iResetn,iPlotBox,iLoadX,iClock,note,octave_plus_plus,octave_minus_minus,amp_plus_plus,amp_minus_minus,ADSR_selector,
+                  ADSR_plus_plus,ADSR_minus_minus,oX,oY,oColour,oPlot,oDone, state);
    // Inputs
    input iResetn, iPlotBox, iLoadX;
    input iClock;
-   input note,
+   input note;
+   input octave_plus_plus;
+   input octave_minus_minus;
+   input amp_plus_plus;
+   input amp_minus_minus;
+   input [2:0] ADSR_selector;
+   input ADSR_plus_plus;
+   input ADSR_minus_minus;
    
    // Outputs
    output reg [8:0] oX;          // VGA pixel coordinates
@@ -178,97 +186,136 @@ module datapath(
       end
    end
 
-//wires
+// Internal wires for VGA pixel coordinates based on note
 wire [8:0] vga_x_position;
 wire [7:0] vga_y_position;
 
-//determine VGA pixel coordinates based on note
+// Logic to determine VGA pixel coordinates based on note
 always @* begin
     case (note)
         4'b0000: begin
-            vga_x_position = 9'd33;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd66;
+            vga_y_position = 8'd124;
         end
         4'b0001: begin
-            vga_x_position = 9'd40;
-            vga_y_position = 8'd44;
+            vga_x_position = 9'd81;
+            vga_y_position = 8'd96;
         end
         4'b0010: begin
-            vga_x_position = 9'd49;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd99;
+            vga_y_position = 8'd124;
         end
         4'b0011: begin
-            vga_x_position = 9'd57;
-            vga_y_position = 8'd44;
+            vga_x_position = 9'd112;
+            vga_y_position = 8'd96;
         end
         4'b0100: begin
-            vga_x_position = 9'd64;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd131;
+            vga_y_position = 8'd124;
         end
         4'b0101: begin
-            vga_x_position = 9'd80;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd161;
+            vga_y_position = 8'd124;
         end
         4'b0110: begin
-            vga_x_position = 9'd87;
-            vga_y_position = 8'd44;
+            vga_x_position = 9'd174;
+            vga_y_position = 8'd96;
         end
         4'b0111: begin
-            vga_x_position = 9'd96;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd192;
+            vga_y_position = 8'd124;
         end
         4'b1000: begin
-            vga_x_position = 9'd104;
-            vga_y_position = 8'd44;
+            vga_x_position = 9'd209;
+            vga_y_position = 8'd96;
         end
         4'b1001: begin
-            vga_x_position = 9'd112;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd224;
+            vga_y_position = 8'd124;
         end
         4'b1010: begin
-            vga_x_position = 9'd121;
-            vga_y_position = 8'd44;
+            vga_x_position = 9'd245;
+            vga_y_position = 8'd96;
         end
         4'b1011: begin
-            vga_x_position = 9'd128;
-            vga_y_position = 8'd57;
+            vga_x_position = 9'd254;
+            vga_y_position = 8'd124;
         end
         default: begin
             vga_x_position = 9'd0;
             vga_y_position = 8'd0;
         end
-    endcase
-end
 
-   always @(posedge iClock) begin
-        if (~iResetn) begin
-            oPlot <= 1'b0;
-            oColour <= 3'b0;
-            oY <= 8'd0;
-            oX <= 9'd0;
-            oDone <= 1'b0;
+    endcase
+     default: begin
+           // Default state
             state <= 4'd0;
-        end
-        else begin
-            case (state)
-                4'd0: begin
-                    oPlot <= 1'b1;
-                    oColour <= 3'b001; //yellow (RGB: 001)
-                    oX <= vga_x_position;
-                    oY <= vga_y_position;
-                    if (state == 4'd15) begin
-                        state <= 4'd0; //reset state to draw again
-                        oPlot <= 1'b0;
-                        oDone <= 1'b1;
-                    end
-                    else
-                        state <= state + 1'b1;
-                end
-                default: begin
-                    state <= 4'd0;
-                    oDone <= 1'b0;
-                end
-            endcase
-        end
-    end
+             oDone <= 1'b0;
+                    
+           // Octave adjustments
+           if (octave_plus_plus)
+             vga_x_position = 9'd103;
+             vga_y_position = 8'd169;
+           if (octave_minus_minus)
+               vga_x_position = 9'd71;
+               vga_y_position = 8'd169;
+                    
+                    // Amplitude adjustments
+            if (amp_plus_plus)
+               vga_x_position = 9'd64;
+               vga_y_position = 8'd64;
+            if (amp_minus_minus)
+                vga_x_position = 9'd64;
+                vga_y_position = 8'd64;
+            
+                    
+                    // ADSR adjustments
+                    case (ADSR_selector)
+                        3'b001: if (ADSR_plus_plus) 
+                        vga_x_position = 9'd153;
+                        vga_y_position = 8'd169;
+                        ADSR_plus_plus <= 1;
+                        3'b010: if (ADSR_minus_minus)
+                        vga_x_position = 9'd183;
+                        vga_y_position = 8'd169;
+                    endcase
+     end
+end
+   always @(posedge iClock) begin
+      if(!iResetn) begin
+         // Initialization on reset
+         oPlot <= 1'b0;
+         oColour <= 3'b0;
+         oX <= vga_x_position; // Set VGA pixel X-coordinate based on note
+         oY <= vga_y_position; // Set VGA pixel Y-coordinate based on note
+         oDone <= 1'b0;
+         counter <= 5'd0;
+      end
+      else if(ld_plot) begin
+         // Logic for drawing in yellow
+         oPlot <= 1'b1;
+         if (counter <= 5'b01111) begin
+            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
+            counter <= counter + 1'b1;
+            oX <= x + counter[1:0];
+            oY <= y + counter[3:2];
+         end
+         else begin
+            oX <= oX;
+            oY <= oY;
+            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
+            counter <= 0;
+         end
+      end
+      if(ld_col_out)
+         oColour <= col;
+      if(ld_output)
+         oDone <= 1'b1;
+      if(ld_x_out)
+         oX <= x;
+      if(ld_y_out)
+         oY <= y;
+   end
+
 endmodule
+
