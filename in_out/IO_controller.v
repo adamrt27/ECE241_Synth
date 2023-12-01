@@ -122,19 +122,19 @@ module IO_controller(
             release_reg <= 31'd1073741824;
         end
         else // updating values of octave, amplitude, and ADSR
-            octave_reg <= octave_reg + octave_plus_plus - octave_minus_minus;
+            octave_reg <= octave_reg + (octave_plus_plus*(20)) - (octave_minus_minus*(20));
             // purpose of 1 << 24 is to make each setting essentially 8 bits, instead of 32.
             case (ADSR_selector) 
                 0: // amplitude
-                    amplitude_reg <= amplitude_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    amplitude_reg <= amplitude_reg + (ADSR_plus_plus * (20)) - (ADSR_minus_minus * (20));
                 1: // attack
-                    attack_reg <= attack_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    attack_reg <= attack_reg + (ADSR_plus_plus * (20)) - (ADSR_minus_minus * (20));
                 2: // decay
-                    decay_reg <= decay_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    decay_reg <= decay_reg + (ADSR_plus_plus * (20)) - (ADSR_minus_minus * (20));
                 3: // sustain
-                    sustain_reg <= sustain_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    sustain_reg <= sustain_reg + (ADSR_plus_plus * (20)) - (ADSR_minus_minus * (20));
                 4: // release
-                    release_reg <= release_reg + (ADSR_plus_plus * (8388608)) - (ADSR_minus_minus * (8388608));
+                    release_reg <= release_reg + (ADSR_plus_plus * (20)) - (ADSR_minus_minus * (20));
             endcase
     end
 
