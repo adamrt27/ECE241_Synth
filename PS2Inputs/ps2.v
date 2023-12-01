@@ -154,6 +154,7 @@ inout				PS2_DAT,
                     if(ADSR_selector == 3'b100)
                         ADSR_plus_plus <= 1;
                 end
+                
             endcase
     end
     endmodule
