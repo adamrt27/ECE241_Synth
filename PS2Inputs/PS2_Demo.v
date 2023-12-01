@@ -47,8 +47,8 @@ output		[6:0]	HEX4;
 output		[6:0]	HEX5;
 output		[6:0]	HEX6;
 output		[6:0]	HEX7;
- output reg [7:0] last_data_received;
- output ps2_key_pressed;
+output reg [7:0] last_data_received;
+output ps2_key_pressed;
 
 /*****************************************************************************
  *                 Internal Wires and Registers Declarations                 *
