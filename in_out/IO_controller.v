@@ -76,7 +76,7 @@ module IO_controller(
 	vgadisplay v0(
 		.iClock(CLOCK_50)
 		.iResetn(reset)
-		.iPlotBox(note),
+		.iPlotBox(S2_DAT),
 		.iLoadX(PS2_DAT),
 		.oColour(colour),
 		.oPlot(writeEn),
@@ -87,7 +87,6 @@ module IO_controller(
 		.note(note)
 		.octave_minus_minus(octave_minus_minus),
             	.octave_plus_plus(octave_plus_plus),
-           	.note_in(note_in), 
            	.amp_minus_minus(amp_minus_minus),
 		.amp_plus_plus(amp_plus_plus));
 	
