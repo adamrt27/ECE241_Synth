@@ -17,7 +17,7 @@ module PS2_Demo (
 	HEX5,
 	HEX6,
 	HEX7,
-   last_data_received,//this was changed from original
+   	ps2_key_data,//this was changed from original
 	ps2_key_pressed//this was changed from original
 );
 
