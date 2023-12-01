@@ -1,9 +1,7 @@
 
-module vgadisplay(iResetn,iPlotBox,iColour,iLoadX,iXY_Coord,iClock,note,oX,oY,oColour,oPlot,oDone, state);
+module vgadisplay(iResetn,iPlotBox,iLoadX,iClock,oX,oY,oColour,oPlot,oDone, state);
    // Inputs
    input iResetn, iPlotBox, iLoadX;
-   input [2:0] iColour;
-   input [8:0] iXY_Coord;
    input iClock;
    input note,
    
@@ -48,8 +46,6 @@ module vgadisplay(iResetn,iPlotBox,iColour,iLoadX,iXY_Coord,iClock,note,oX,oY,oC
    datapath D0(
       .iClock(iClock),
       .iResetn(iResetn),
-      .iXY_Coord(iXY_Coord),
-      .iColour(iColour),
       .ld_x_reg(ld_x_reg),
       .ld_y_reg(ld_y_reg),
       .ld_col_reg(ld_col_reg),
@@ -66,7 +62,7 @@ module vgadisplay(iResetn,iPlotBox,iColour,iLoadX,iXY_Coord,iClock,note,oX,oY,oC
       .counter(counter)
    );
 
-endmodule // vgadisplay
+endmodule // part2
 
 // Control Module
 module control(
@@ -160,8 +156,6 @@ endmodule
 module datapath(
    input iClock,
    input iResetn,
-   input [6:0] iXY_Coord,
-   input [2:0] iColour,
    input ld_x_reg, ld_y_reg, ld_col_reg, ld_plot, ld_x_out, ld_y_out, ld_col_out, ld_output,
    output reg [8:0] oX,         // VGA pixel coordinates
    output reg [7:0] oY,
@@ -181,16 +175,6 @@ module datapath(
          x <= 8'b0;
          y <= 7'b0;
          col <= 3'b0;
-      end
-      else begin
-         if(ld_x_reg)
-            // Limit x to X_SCREEN_PIXELS-1 (from 0 to X_SCREEN_PIXELS-1)
-            x <= (iXY_Coord[3:0] >= X_SCREEN_PIXELS) ? (X_SCREEN_PIXELS - 1) : iXY_Coord[3:0];
-         if(ld_y_reg)
-            // Limit y to Y_SCREEN_PIXELS-1 (from 0 to Y_SCREEN_PIXELS-1)
-            y <= (iXY_Coord[6:3] >= Y_SCREEN_PIXELS) ? (Y_SCREEN_PIXELS - 1) : iXY_Coord[6:3];
-         if(ld_col_reg)
-            col <= iColour;
       end
    end
 
@@ -261,15 +245,16 @@ end
          // Initialization on reset
          oPlot <= 1'b0;
          oColour <= 3'b0;
-         oX <= vga_x_position; 
-         oY <= vga_y_position; 
+         oX <= vga_x_position; // Set VGA pixel X-coordinate based on note
+         oY <= vga_y_position; // Set VGA pixel Y-coordinate based on note
          oDone <= 1'b0;
          counter <= 5'd0;
       end
       else if(ld_plot) begin
+         // Logic for drawing in yellow
          oPlot <= 1'b1;
          if (counter <= 5'b01111) begin
-            oColour <= 3'b001; //yellow
+            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
             counter <= counter + 1'b1;
             oX <= x + counter[1:0];
             oY <= y + counter[3:2];
@@ -277,7 +262,7 @@ end
          else begin
             oX <= oX;
             oY <= oY;
-            oColour <= 3'b001; 
+            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
             counter <= 0;
          end
       end
