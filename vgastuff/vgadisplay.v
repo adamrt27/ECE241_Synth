@@ -178,7 +178,7 @@ module datapath(
       end
    end
 
-// Internal wires for VGA pixel coordinates based on note
+//wires
 wire [8:0] vga_x_position;
 wire [7:0] vga_y_position;
 
@@ -241,40 +241,34 @@ always @* begin
 end
 
    always @(posedge iClock) begin
-      if(!iResetn) begin
-         // Initialization on reset
-         oPlot <= 1'b0;
-         oColour <= 3'b0;
-         oX <= vga_x_position; // Set VGA pixel X-coordinate based on note
-         oY <= vga_y_position; // Set VGA pixel Y-coordinate based on note
-         oDone <= 1'b0;
-         counter <= 5'd0;
-      end
-      else if(ld_plot) begin
-         // Logic for drawing in yellow
-         oPlot <= 1'b1;
-         if (counter <= 5'b01111) begin
-            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
-            counter <= counter + 1'b1;
-            oX <= x + counter[1:0];
-            oY <= y + counter[3:2];
-         end
-         else begin
-            oX <= oX;
-            oY <= oY;
-            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
-            counter <= 0;
-         end
-      end
-      if(ld_col_out)
-         oColour <= col;
-      if(ld_output)
-         oDone <= 1'b1;
-      if(ld_x_out)
-         oX <= x;
-      if(ld_y_out)
-         oY <= y;
-   end
-
+        if (~iResetn) begin
+            oPlot <= 1'b0;
+            oColour <= 3'b0;
+            oY <= 8'd0;
+            oX <= 9'd0;
+            oDone <= 1'b0;
+            state <= 4'd0;
+        end
+        else begin
+            case (state)
+                4'd0: begin
+                    oPlot <= 1'b1;
+                    oColour <= 3'b001; //yellow (RGB: 001)
+                    oX <= vga_x_position;
+                    oY <= vga_y_position;
+                    if (state == 4'd15) begin
+                        state <= 4'd0; //reset state to draw again
+                        oPlot <= 1'b0;
+                        oDone <= 1'b1;
+                    end
+                    else
+                        state <= state + 1'b1;
+                end
+                default: begin
+                    state <= 4'd0;
+                    oDone <= 1'b0;
+                end
+            endcase
+        end
+    end
 endmodule
-
