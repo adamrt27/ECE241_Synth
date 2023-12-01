@@ -29,7 +29,16 @@ module IO_controller(
 	output [6:0] HEX3, 
 	output [6:0] HEX4, 
 	output [6:0] HEX5, 
-	output [7:0] LEDR
+	output [7:0] LEDR,
+
+	output VGA_CLK,
+	output VGA_HS,
+	output VGA_VS,
+	output VGA_BLANK_N,
+	output VGA_SYNC_N,
+	output [7:0] VGA_R,
+	output [7:0] VGA_G,
+	output [7:0] VGA_B
     );
 	
 	
@@ -57,6 +66,29 @@ module IO_controller(
             .amp_minus_minus(amp_minus_minus),
             .amp_plus_plus(amp_plus_plus)
     );
+	//VGA
+	wire [2:0] colour;
+	wire [8:0] x;
+	wire [7:0] y;
+	wire done;
+	wire writeEn;
+	wire [3:0]state;
+	vgadisplay v0 (.iClock(CLOCK_50)
+		       .iResetn(reset)
+		       .iPlotBox(note),
+		       .iLoadX(PS2_DAT),
+		       .oColour(colour),
+		       .oPlot(writeEn),
+		       .oX(x),
+		       .oY(y),
+		       .oDone(done),
+                       .state(state)
+		       .note(note))
+		       .octave_minus_minus(octave_minus_minus),
+            	       .octave_plus_plus(octave_plus_plus),
+           	       .note_in(note_in), 
+           	       .amp_minus_minus(amp_minus_minus),
+           	       .amp_plus_plus(amp_plus_plus);
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
 
