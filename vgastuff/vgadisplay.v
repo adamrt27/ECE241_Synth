@@ -1,10 +1,11 @@
 
-module vgadisplay(iResetn,iPlotBox,iColour,iLoadX,iXY_Coord,iClock,oX,oY,oColour,oPlot,oDone, state);
+module vgadisplay(iResetn,iPlotBox,iColour,iLoadX,iXY_Coord,iClock,note,oX,oY,oColour,oPlot,oDone, state);
    // Inputs
    input iResetn, iPlotBox, iLoadX;
    input [2:0] iColour;
    input [8:0] iXY_Coord;
    input iClock;
+   input note,
    
    // Outputs
    output reg [8:0] oX;          // VGA pixel coordinates
@@ -65,7 +66,7 @@ module vgadisplay(iResetn,iPlotBox,iColour,iLoadX,iXY_Coord,iClock,oX,oY,oColour
       .counter(counter)
    );
 
-endmodule // part2
+endmodule // vgadisplay
 
 // Control Module
 module control(
@@ -193,21 +194,82 @@ module datapath(
       end
    end
 
+// Internal wires for VGA pixel coordinates based on note
+wire [8:0] vga_x_position;
+wire [7:0] vga_y_position;
+
+// Logic to determine VGA pixel coordinates based on note
+always @* begin
+    case (note)
+        4'b0000: begin
+            vga_x_position = 9'd33;
+            vga_y_position = 8'd57;
+        end
+        4'b0001: begin
+            vga_x_position = 9'd40;
+            vga_y_position = 8'd44;
+        end
+        4'b0010: begin
+            vga_x_position = 9'd49;
+            vga_y_position = 8'd57;
+        end
+        4'b0011: begin
+            vga_x_position = 9'd57;
+            vga_y_position = 8'd44;
+        end
+        4'b0100: begin
+            vga_x_position = 9'd64;
+            vga_y_position = 8'd57;
+        end
+        4'b0101: begin
+            vga_x_position = 9'd80;
+            vga_y_position = 8'd57;
+        end
+        4'b0110: begin
+            vga_x_position = 9'd87;
+            vga_y_position = 8'd44;
+        end
+        4'b0111: begin
+            vga_x_position = 9'd96;
+            vga_y_position = 8'd57;
+        end
+        4'b1000: begin
+            vga_x_position = 9'd104;
+            vga_y_position = 8'd44;
+        end
+        4'b1001: begin
+            vga_x_position = 9'd112;
+            vga_y_position = 8'd57;
+        end
+        4'b1010: begin
+            vga_x_position = 9'd121;
+            vga_y_position = 8'd44;
+        end
+        4'b1011: begin
+            vga_x_position = 9'd128;
+            vga_y_position = 8'd57;
+        end
+        default: begin
+            vga_x_position = 9'd0;
+            vga_y_position = 8'd0;
+        end
+    endcase
+end
+
    always @(posedge iClock) begin
       if(!iResetn) begin
          // Initialization on reset
          oPlot <= 1'b0;
          oColour <= 3'b0;
-         oY <= 7'b0;
-         oX <= 8'b0;
+         oX <= vga_x_position; 
+         oY <= vga_y_position; 
          oDone <= 1'b0;
          counter <= 5'd0;
       end
       else if(ld_plot) begin
-         // Logic for drawing in yellow
          oPlot <= 1'b1;
          if (counter <= 5'b01111) begin
-            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
+            oColour <= 3'b001; //yellow
             counter <= counter + 1'b1;
             oX <= x + counter[1:0];
             oY <= y + counter[3:2];
@@ -215,7 +277,7 @@ module datapath(
          else begin
             oX <= oX;
             oY <= oY;
-            oColour <= 3'b001; // Set the color to yellow (RGB: 001)
+            oColour <= 3'b001; 
             counter <= 0;
          end
       end
