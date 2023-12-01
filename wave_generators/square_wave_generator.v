@@ -8,19 +8,18 @@ module square_wave_generator(
 
 	localparam CLOCK_FREQUENCY = 50000000;
 	
-    reg [15:0] period;
+    reg [31:0] period;
 	reg [31:0] sq_wave_reg;
 	assign sq_wave = sq_wave_reg;
 
  	always @(posedge clk) begin
 		if (!reset_n | frequency == 0) begin
-			period <= 16'b0;
+			period <= 32'b0;
 			sq_wave_reg	<= 32'b0;
-            period <= 16'b0;
 		end
 	
 		else begin 
-			if (period == 16'b0) begin
+			if (period == 32'b0) begin
 				if (sq_wave_reg == 0)
 					sq_wave_reg <= amplitude * 2;
 				else 

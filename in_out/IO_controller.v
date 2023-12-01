@@ -43,7 +43,7 @@ module IO_controller(
 	
 	
 	// wires for general stuff
-    
+
     wire clk;
     assign clk = CLOCK_50;
     wire reset;
@@ -202,7 +202,8 @@ module IO_controller(
         .decay(decay), 
         .sustain(sustain), 
         .rel(rel), 
-        .wave_out(wave_out));
+        .wave_out(wave_out)
+    );
 
     // ************************************************************************************************************************************
     // setting up audio ouput
