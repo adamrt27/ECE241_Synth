@@ -60,28 +60,33 @@ endmodule // part2
 module ctrl(
    input iClock,
    input iResetn,
-	input note_in,
+   input note_in,
    input iPlotBox,
-   
-	input [4:0] counter,
-	output reg ld_draw
+   input [4:0] counter,
+   output reg ld_draw
 );
-	 reg [3:0] cur_state;
+    reg [3:0] cur_state;
     reg [3:0] next_state;
 
    // Define states
-   localparam A = 4'b0000, B = 4'b0001, C = 4'b0010;
+   localparam A = 4'b0000, B = 4'b0001, C = 4'b0010, D = 4'b0011;
    always @(*)
    begin: state_table
       // State transition logic
       case (cur_state)
-         A : begin
-            if (note_in) next_state = B ;
+         A: begin
+            if (note_in) next_state = B;
             else next_state = A;
          end
-			B : begin // draw
-				next_state=(counter<=5'b01111) ? B : A;
-			end				
+         B: begin // draw
+            next_state = (counter <= 5'b01111) ? B : C;
+         end
+         C: begin // wait for note release
+            next_state = (note_in) ? C : D;
+         end
+         D: begin // erase
+            next_state = (counter <= 5'b01111) ? D : A;
+         end
          default: next_state = A;
       endcase
    end // state_table
@@ -89,12 +94,15 @@ module ctrl(
    always @(*)
    begin: enable_signals
       // Initialize signals to 0 by default
-      ld_draw <= 0;
+      ld_draw = 0;
 
       // Output control based on the current state
       case (cur_state)
-         B : begin
-            ld_draw <= 1;
+         B, D: begin
+            ld_draw = 1;
+         end
+         default: begin
+            ld_draw = 0;
          end
       endcase
    end // enable_signals
@@ -110,6 +118,7 @@ module ctrl(
    end // state_FFs
 
 endmodule
+
 
 // Datapath Module
 module data(
@@ -129,8 +138,8 @@ module data(
 );
 
 // Internal wires for VGA pixel coordinates based on note
-reg [8:0] vga_x_position;
-reg [7:0] vga_y_position;
+reg [8:0] vga_x_position=0;
+reg [7:0] vga_y_position=0;
 
 // Logic to determine VGA pixel coordinates based on note
 always @* begin
@@ -215,31 +224,32 @@ always @* begin
 
 end
    always @(posedge iClock) begin
-      if(~iResetn) begin
-         // Initialization on reset
-         oPlot <= 1'b0;
-         oColour <= 3'b000;
-         oX <= 8'b00000000; // Set VGA pixel X-coordinate based on note
-         oY <= 7'b0000000; // Set VGA pixel Y-coordinate based on note
-         counter <= 5'd00000;
+   if(~iResetn) begin
+      // Initialization on reset
+      oPlot <= 1'b0;
+      oColour <= 3'b000;
+      oX <= 8'b00000000; 
+      oY <= 7'b0000000; 
+      counter <= 5'd00000;
+   end
+   else if(ld_draw) begin
+      // Logic for drawing in yellow
+      oPlot <= 1'b1;
+      if (counter <= 5'b01111) begin
+         oColour <= 3'b110; // Set the color to yellow
+         
+         if (counter == 5'd0) begin
+            oX <= vga_x_position + counter[1:0]; 
+            oY <= vga_y_position + counter[3:2]; 
+         end
       end
-      else if(ld_draw) begin
-         // Logic for drawing in yellow
-         oPlot <= 1'b1;
-         if (counter <= 5'b01111) begin
-            oColour <= 3'b110; // Set the color to yellow (RGB: 001)
-            counter <= counter + 1'b1;
-            oX <= vga_x_position + counter[1:0];
-            oY <= vga_y_position + counter[3:2];
-         end
-         else begin
-            oX <= oX;
-            oY <= oY;
-            oColour <= 3'b110; // Set the color to yellow (RGB: 001)
-            counter <= 0;
-         end
+      else begin
+         // Reset counter when not drawing
+         counter <= 5'd0;
       end
    end
+end
+
 
 endmodule
 
