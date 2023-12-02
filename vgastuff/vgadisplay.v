@@ -190,7 +190,7 @@ always @* begin
 
     endcase
                     
-/*		  // Octave adjustments
+		  // Octave adjustments
 		  if (octave_plus_plus) begin
 			 vga_x_position = 9'd103;
 			 vga_y_position = 8'd169;
@@ -211,7 +211,7 @@ always @* begin
 			if (ADSR_minus_minus) begin
 				vga_x_position = 9'd183;
 				vga_y_position = 8'd169;
-		  end */
+		  end
 
 end
    always @(posedge iClock) begin
