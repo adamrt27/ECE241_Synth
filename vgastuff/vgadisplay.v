@@ -1,8 +1,8 @@
 
-module vgadisplay(iResetn,iPlotBox,iClock,note,note_in,octave_plus_plus,octave_minus_minus,
+module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minus,
                   ADSR_plus_plus,ADSR_minus_minus,ADSR_selector,oX,oY,oColour,oPlot);
    // Inputs
-   input iResetn, iPlotBox;
+   input iResetn;
    input iClock;
    input [3:0]note;
 	input note_in;
@@ -31,8 +31,7 @@ module vgadisplay(iResetn,iPlotBox,iClock,note,note_in,octave_plus_plus,octave_m
    ctrl C0(
       .iClock(iClock),
       .iResetn(iResetn),
-      .iPlotBox(iPlotBox),
-		.note_in(note_in),
+      .note_in(note_in),
       .ld_draw(ld_draw),
       .counter(counter)
    );
@@ -61,7 +60,6 @@ module ctrl(
    input iClock,
    input iResetn,
    input note_in,
-   input iPlotBox,
    input [4:0] counter,
    output reg ld_draw
 );
