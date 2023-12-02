@@ -39,7 +39,8 @@ module IO_controller(
 	output VGA_SYNC_N,
 	output [7:0] VGA_R,
 	output [7:0] VGA_G,
-	output [7:0] VGA_B
+	output [7:0] VGA_B,
+	LEDR
     );
 	
 	
