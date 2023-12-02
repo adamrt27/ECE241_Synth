@@ -18,6 +18,7 @@ inout				PS2_DAT,
     wire [7:0] eightbit;//this was changed from original
 	wire temp_note_in;
     reg change;
+    reg note_change;
 	 
     PS2_Demo a(.CLOCK_50(CLOCK_50), .KEY(KEY), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .ps2_key_pressed(temp_note_in), 
     .ps2_key_data(eightbit));
@@ -37,9 +38,11 @@ inout				PS2_DAT,
             sine <= 0;
             overdrive <= 2'b00;
             change <= 0;
+            note_change <= 0;//set note change to 0 initially
         end
         else begin // updating values of octave, amplitude, and ADSR
-            note_in <= 0;
+            if(~note_change)//only if the shift key is pressed should you change note_in to 0
+                note_in <= 0;
             octave_minus_minus <= 0;
             octave_plus_plus <= 0;
             ADSR_minus_minus <= 0;
@@ -151,7 +154,7 @@ inout				PS2_DAT,
                     note_in <= 0;
                     ADSR_plus_plus <= 1;
                 end
-                8'h3D: //7 which is changing the sine wave
+                8'h36: //6 which is changing the sine wave
                 begin
                     if(~change) begin
                         sine <= ~sine;
@@ -159,7 +162,7 @@ inout				PS2_DAT,
                         change = 1;
                     end 
                 end
-                8'h3E: //8 which is changing overdrive (first bit)
+                8'h3D: //7 which is changing overdrive (first bit)
                 begin
                     if(~change) begin
                         overdrive[0] <= ~overdrive[0];
@@ -167,7 +170,7 @@ inout				PS2_DAT,
                         change = 1;
                     end 
                 end
-                8'h46: //9 which is changing overdrive (second bit)
+                8'h3E: //8 which is changing overdrive (second bit)
                 begin
                     if(~change) begin
                         overdrive[1] <= ~overdrive[1];
@@ -175,12 +178,15 @@ inout				PS2_DAT,
                         change = 1;
                     end 
                 end
-                8'h45: //0 which is making the note play continuously
+                8'h0D: //0 which is making the note play continuously
                 begin
-                    if(~change) begin
-                        note_in <= ~note_in;
-                        change = 1;
-                    end 
+                    if(~note_change) begin//if note change is 0 (it is 0 initially)
+                        note_in <= 1;
+                        note_change = 1;
+                    end else begin //if note change is 1 (it has been pressed again)
+                        note_in <= 0;//note_in should be 0 now
+                        note_change = 0;//we should change note_change to 0
+                    end
                 end
             
         endcase
