@@ -17,7 +17,7 @@ inout				PS2_DAT,
 	wire temp_note_in;
 	 
     PS2_Demo a(.CLOCK_50(CLOCK_50), .KEY(KEY), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .ps2_key_pressed(temp_note_in), 
-    .last_data_received(eightbit));
+    .ps2_key_data(eightbit));
 	 
 
    
