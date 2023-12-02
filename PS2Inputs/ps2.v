@@ -180,16 +180,17 @@ inout				PS2_DAT,
                 end
                 8'h0D: //0 which is making the note play continuously
                 begin
-                    if(~note_change) begin//if note change is 0 (it is 0 initially)
-                        note_in <= 1;
-                        note_change <= 1;
-                    end else begin //if note change is 1 (it has been pressed again)
-                        note_in <= 0;//note_in should be 0 now
-                        note_change <= 0;//we should change note_change to 0
+                    if(~change)begin
+                        if(~note_change) begin//if note change is 0 (it is 0 initially)
+                            note_in <= 1;
+                            note_change <= 1;
+                        end else begin //if note change is 1 (it has been pressed again)
+                            note_in <= 0;//note_in should be 0 now
+                            note_change <= 0;//we should change note_change to 0
+                        end
                     end
                 end
-            
-        endcase
+            endcase
         end
     end
-    endmodule
+endmodule
