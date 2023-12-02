@@ -85,8 +85,5 @@ defparam VGA.BACKGROUND_IMAGE = "piano.mif";
 
 // Put your code here. Your code should produce signals x,y,colour and writeEn
 // for the VGA controller, in addition to any other functionality your design may require.
-ps2 p0(
-  
-);
 
 endmodule
