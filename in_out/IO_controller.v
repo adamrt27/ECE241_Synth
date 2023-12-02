@@ -1,3 +1,4 @@
+
 module IO_controller(
     // general inputs
     input CLOCK_50, 
@@ -29,7 +30,7 @@ module IO_controller(
 	output [6:0] HEX3, 
 	output [6:0] HEX4, 
 	output [6:0] HEX5, 
-	output [7:0] LEDR,
+	output [9:0] LEDR,
 
 	output VGA_CLK,
 	output VGA_HS,
@@ -196,27 +197,24 @@ module IO_controller(
 	wire [2:0] colour;
 	wire [8:0] x;
 	wire [7:0] y;
-	wire done;
 	wire writeEn;
-	wire [3:0]state;
 	vgadisplay v0(
-		.iClock(CLOCK_50)
-		.iResetn(reset)
-		.iPlotBox(S2_DAT),
-		.iLoadX(PS2_DAT),
+		.iClock(CLOCK_50),
+		.iResetn(reset),
+		.iPlotBox(note_in),
+		.note_in(note_in),
 		.oColour(colour),
 		.oPlot(writeEn),
 		.oX(x),
 		.oY(y),
-		.oDone(done),
-                .state(state)
-		.note(note)
+		.note(note),
 		.octave_minus_minus(octave_minus_minus),
-            	.octave_plus_plus(octave_plus_plus),
-           	.amp_minus_minus(amp_minus_minus),
-		.amp_plus_plus(amp_plus_plus));
+      .octave_plus_plus(octave_plus_plus),
+		.ADSR_selector(ADSR_selector),
+      .ADSR_minus_minus(ADSR_minus_minus),
+		.ADSR_plus_plus(ADSR_plus_plus));
 	
-	vga_adapter v1(
+	vga_adapter VGA(
 		.resetn(resetn),
 		.clock(CLOCK_50),
 		.colour(colour),
@@ -279,8 +277,7 @@ module IO_controller(
     // set note_in to LEDR 0, and note to LEDR 1-4 for testing
     assign LEDR[0] = note_in;
     assign LEDR[4:1] = note;
+	 assign LEDR[8:5] = {octave_plus_plus, octave_minus_minus, ADSR_plus_plus, ADSR_minus_minus};
 	 
 	 
-	assign LEDR[7] = reset;
-
 endmodule
