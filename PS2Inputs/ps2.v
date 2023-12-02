@@ -17,7 +17,7 @@ inout				PS2_DAT,
 	wire temp_note_in;
 	 
     PS2_Demo a(.CLOCK_50(CLOCK_50), .KEY(KEY), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .ps2_key_pressed(temp_note_in), 
-    .ps2_key_data(eightbit));
+    .last_data_received(eightbit));
 	 
 
    
@@ -32,7 +32,7 @@ inout				PS2_DAT,
             ADSR_selector <= 0;
             note_in <= 0;
         end
-        else if(temp_note_in == 1) begin // updating values of octave, amplitude, and ADSR
+        else begin // updating values of octave, amplitude, and ADSR
             note_in <= 0;
             octave_minus_minus <= 0;
             octave_plus_plus <= 0;
