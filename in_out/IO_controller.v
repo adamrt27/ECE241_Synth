@@ -67,7 +67,9 @@ module IO_controller(
             .note_in(note_in), 
             .ADSR_minus_minus(ADSR_minus_minus),
             .ADSR_plus_plus(ADSR_plus_plus),
-            .ADSR_selector(ADSR_selector)
+            .ADSR_selector(ADSR_selector),
+            .sine(sine),
+            .overdrive(overdrive)
     );
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
