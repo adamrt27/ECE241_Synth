@@ -201,7 +201,6 @@ module IO_controller(
 	vgadisplay v0(
 		.iClock(CLOCK_50),
 		.iResetn(reset),
-		.iPlotBox(note_in),
 		.note_in(note_in),
 		.oColour(colour),
 		.oPlot(writeEn),
