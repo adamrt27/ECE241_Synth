@@ -63,8 +63,8 @@ module ctrl(
    input [4:0] counter,
    output reg ld_draw
 );
-    reg [3:0] cur_state;
-    reg [3:0] next_state;
+reg [3:0] cur_state = 4'b0000;
+reg [3:0] next_state = 4'b0000;
 
    // Define states
    localparam A = 4'b0000, B = 4'b0001, C = 4'b0010, D = 4'b0011;
