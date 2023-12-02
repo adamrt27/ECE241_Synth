@@ -10,18 +10,21 @@ inout				PS2_DAT,
     output reg note_in, 
     output reg ADSR_minus_minus,
     output reg ADSR_plus_plus,
-    output reg [2:0] ADSR_selector
+    output reg [2:0] ADSR_selector,
+    output reg sine,
+    output reg [1:0] overdrive
     //[2:0]ADSR: if you click key 1 it gives 0, 2 gives you 1, 3 gives you 2 etc.
     );
     wire [7:0] eightbit;//this was changed from original
 	wire temp_note_in;
+    reg change;
 	 
     PS2_Demo a(.CLOCK_50(CLOCK_50), .KEY(KEY), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .ps2_key_pressed(temp_note_in), 
     .ps2_key_data(eightbit));
 	 
 
    
-    always@(posedge PS2_CLK) begin
+    always@(eightbit) begin
 	 	 note_in = temp_note_in;
         if (~KEY[0]) begin // setting defaults
             note <= 4'b0000;
@@ -31,6 +34,9 @@ inout				PS2_DAT,
             ADSR_plus_plus <= 0;
             ADSR_selector <= 0;
             note_in <= 0;
+            sine <= 0;
+            overdrive <= 2'b00;
+            change <= 0;
         end
         else begin // updating values of octave, amplitude, and ADSR
             note_in <= 0;
@@ -38,6 +44,7 @@ inout				PS2_DAT,
             octave_plus_plus <= 0;
             ADSR_minus_minus <= 0;
             ADSR_plus_plus <= 0;
+            change <= 0;
             case (eightbit) 
                 8'h1C: //c letter a
                 begin
@@ -143,6 +150,37 @@ inout				PS2_DAT,
                 begin
                     note_in <= 0;
                     ADSR_plus_plus <= 1;
+                end
+                8'h3D: //7 which is changing the sine wave
+                begin
+                    if(~change) begin
+                        sine <= ~sine;
+                        note_in <= 0;
+                        change = 1;
+                    end 
+                end
+                8'h3E: //8 which is changing overdrive (first bit)
+                begin
+                    if(~change) begin
+                        overdrive[0] <= ~overdrive[0];
+                        note_in <= 0;
+                        change = 1;
+                    end 
+                end
+                8'h46: //9 which is changing overdrive (second bit)
+                begin
+                    if(~change) begin
+                        overdrive[1] <= ~overdrive[1];
+                        note_in <= 0;
+                        change = 1;
+                    end 
+                end
+                8'h45: //0 which is making the note play continuously
+                begin
+                    if(~change) begin
+                        note_in <= ~note_in;
+                        change = 1;
+                    end 
                 end
             
         endcase
