@@ -198,6 +198,7 @@ module IO_controller(
 	wire [8:0] x;
 	wire [7:0] y;
 	wire writeEn;
+	wire resetn;
 	vgadisplay v0(
 		.iClock(CLOCK_50),
 		.iResetn(reset),
