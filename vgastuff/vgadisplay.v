@@ -207,12 +207,12 @@ always @* begin
 			// ADSR adjustments
 					  
 			if (ADSR_plus_plus) begin
-				 vga_x_position <= 9'd153;
+				 vga_x_position <= 9'd183;
 				 vga_y_position <= 8'd169;
 			end
 		 
 			if (ADSR_minus_minus) begin
-				vga_x_position <= 9'd183;
+				vga_x_position <= 9'd153;
 				vga_y_position <= 8'd169;
 		  end
 
@@ -233,8 +233,8 @@ end
          oColour <= 3'b110; // Set the color to yellow (RGB: 001)
          // Set initial values during the first cycle
          if (counter == 5'd0) begin
-            oX <= vga_x_position + counter[1:0]; // Adjust based on your requirements
-            oY <= vga_y_position + counter[3:2]; // Adjust based on your requirements
+		 oX <= vga_x_position + counter[4:0]; // Adjust based on your requirements
+		 oY <= vga_y_position + counter[4:0]; // Adjust based on your requirements
          end
       end
       else begin
