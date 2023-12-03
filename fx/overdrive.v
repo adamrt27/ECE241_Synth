@@ -1,4 +1,4 @@
-module overdrive(clk, reset, activate, overdrive, threshold, max_amplitude, cur_amplitude, adj_cur_amplitude);
+module overdrive(clk, activate, overdrive, threshold, neg_threshold, max_amplitude, cur_amplitude, adj_cur_amplitude);
 
     input clk; // clock
     input activate; // 1 - use clipping, 0 - dont

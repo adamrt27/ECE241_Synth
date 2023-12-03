@@ -7,7 +7,7 @@ module ms_clk(clk, reset, pulse);
 
 endmodule
 
-module s_clk(clk, reset, pulse;
+module s_clk(clk, reset, pulse);
 	input clk; // clock
 	input reset; //active low reset
 	output pulse; // pulses every second
