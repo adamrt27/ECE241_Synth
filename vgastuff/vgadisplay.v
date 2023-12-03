@@ -22,10 +22,6 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
    wire ld_draw;
    wire [4:0] counter;
 
-   // Screen dimensions parameters
-   parameter X_SCREEN_PIXELS = 8'd320;
-   parameter Y_SCREEN_PIXELS = 7'd240;
-
 
    // Instantiate control module
    ctrl C0(
@@ -136,8 +132,8 @@ module data(
 );
 
 // Internal wires for VGA pixel coordinates based on note
-reg [8:0] vga_x_position=0;
-reg [7:0] vga_y_position=0;
+reg [8:0] vga_x_position;
+reg [7:0] vga_y_position;
 
 // Logic to determine VGA pixel coordinates based on note
 always @* begin
@@ -199,25 +195,25 @@ always @* begin
                     
 		  // Octave adjustments
 		  if (octave_plus_plus) begin
-			 vga_x_position = 9'd103;
-			 vga_y_position = 8'd169;
+			 vga_x_position <= 9'd103;
+			 vga_y_position <= 8'd169;
 		 end
 		  if (octave_minus_minus) begin
-				vga_x_position = 9'd71;
-				vga_y_position = 8'd169;
+				vga_x_position <= 9'd71;
+				vga_y_position <= 8'd169;
 			end
 					  
 					  
-					  // ADSR adjustments
+			// ADSR adjustments
 					  
 			if (ADSR_plus_plus) begin
-				 vga_x_position = 9'd153;
-				 vga_y_position = 8'd169;
+				 vga_x_position <= 9'd153;
+				 vga_y_position <= 8'd169;
 			end
 		 
 			if (ADSR_minus_minus) begin
-				vga_x_position = 9'd183;
-				vga_y_position = 8'd169;
+				vga_x_position <= 9'd183;
+				vga_y_position <= 8'd169;
 		  end
 
 end
@@ -232,7 +228,7 @@ end
    end
    else if(ld_draw) begin
       // Logic for drawing in yellow
-      oPlot <= 1'b1;
+      oPlot = 1'b1;
       if (counter <= 5'b01111) begin
          oColour <= 3'b110; // Set the color to yellow (RGB: 001)
          // Set initial values during the first cycle
@@ -250,5 +246,3 @@ end
 
 
 endmodule
-
-
