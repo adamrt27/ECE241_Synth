@@ -1,117 +1,92 @@
-module sine(
-	input clk,
-	input reset_n,
-    input [15:0]frequency,
-	input [30:0] amplitude, // amplitude from 0 to peak (not peak to peak)
-	output [31:0] sq_wave
+module SineWaveGenerator (
+  input wire clk,           // Clock input
+  input wire reset_n,       // Active-low reset input
+  input wire [15:0] frequency,  // Frequency input (16-bit)
+  input wire [30:0] amplitude, // Amplitude input (31-bit)
+  output wire [31:0] sq_wave  // 32-bit sine wave output
 );
-    reg [31:0] sine [0:99];
-//Internal signals  
-    integer i;  
-    reg [7:0] dout; 
-//Initialize the sine rom with samples. 
-    initial begin
-        i = 0;
-                sine[0] = 32b'0*amplitude;//add it to whatever amplitude is
-                sine[1] = 5;
-                sine[2] = 10;
-                sine[3] = 15;
-                sine[4] = 19;
-                sine[5] = 24;
-                sine[6] = 29;
-                sine[7] = 33;
-                sine[8] = 38;
-                sine[9] = 42;
-                sine[10] = 46;
-                sine[11] = 50;
-                sine[12] = 53;
-                sine[13] = 57;
-                sine[14] = 60;
-                sine[15] = 63;
-                sine[16] = 66;
-                sine[17] = 68;
-                sine[18] = 71;
-                sine[19] = 73;
-                sine[20] = 74;
-                sine[21] = 76;
-                sine[22] = 77;
-                sine[23] = 78;
-                sine[24] = 78;
-                sine[25] = 78;
-                sine[26] = 78;
-                sine[27] = 78;
-                sine[28] = 77;
-                sine[29] = 76;
-                sine[30] = 74;
-                sine[31] = 73;
-                sine[32] = 71;
-                sine[33] = 68;
-                sine[34] = 66;
-                sine[35] = 63;
-                sine[36] = 60;
-                sine[37] = 57;
-                sine[38] = 53;
-                sine[39] = 50;
-                sine[40] = 46;
-                sine[41] = 42;
-                sine[42] = 38;
-                sine[43] = 33;
-                sine[44] = 29;
-                sine[45] = 24;
-                sine[46] = 19;
-                sine[47] = 15;
-                sine[48] = 10;
-                sine[49] = 5;
-                sine[50] = 0;
-                sine[51] = -5;
-                sine[52] = -10;
-                sine[53] = -15;
-                sine[54] = -19;
-                sine[55] = -24;
-                sine[56] = -29;
-                sine[57] = -33;
-                sine[58] = -38;
-                sine[59] = -42;
-                sine[60] = -46;
-                sine[61] = -50;
-                sine[62] = -53;
-                sine[63] = -57;
-                sine[64] = -60;
-                sine[65] = -63;
-                sine[66] = -66;
-                sine[67] = -68;
-                sine[68] = -71;
-                sine[69] = -73;
-                sine[70] = -74;
-                sine[71] = -76;
-                sine[72] = -77;
-                sine[73] = -78;
-                sine[74] = -78;
-                sine[75] = -78;
-                sine[76] = -78;
-                sine[77] = -78;
-                sine[78] = -77;
-                sine[79] = -76;
-                sine[80] = -74;
-                sine[81] = -73;
-                sine[82] = -71;
-                sine[83] = -68;
-                sine[84] = -66;
-                sine[85] = -63;
-                sine[86] = -60;
-                sine[87] = -57;
-                sine[88] = -53;
-                sine[89] = -50;
-                sine[90] = -46;
-                sine[91] = -42;
-                sine[92] = -38;
-                sine[93] = -33;
-                sine[94] = -29;
-                sine[95] = -24;
-                sine[96] = -19;
-                sine[97] = -15;
-                sine[98] = -10;
-                sine[99] = -5;
+
+  reg [31:0] sine_lut [0:49];  // Lookup table for sine values
+  reg [15:0] phase;          // 16-bit phase accumulator
+  reg [31:0] amplitude_scaled; // Scaled amplitude
+
+  // Calculate the reciprocal of the frequency
+  reg [31:0] freq_reciprocal;
+  assign freq_reciprocal = 1.0 / frequency;
+
+  // Instantiate sine values explicitly
+  initial begin
+    sine_lut[0] = 32'b0;
+    sine_lut[1] = amplitude * sin(1 * freq_reciprocal);
+    sine_lut[2] = amplitude * sin(2 * freq_reciprocal);
+    sine_lut[4] = amplitude * sin(4 * freq_reciprocal);
+    sine_lut[5] = amplitude * sin(5 * freq_reciprocal);
+    sine_lut[6] = amplitude * sin(6 * freq_reciprocal);
+    sine_lut[7] = amplitude * sin(7 * freq_reciprocal);
+    sine_lut[8] = amplitude * sin(8 * freq_reciprocal);
+    sine_lut[9] = amplitude * sin(9 * freq_reciprocal);
+    sine_lut[10] = amplitude * sin(10 * freq_reciprocal);
+    sine_lut[11] = amplitude * sin(11 * freq_reciprocal);
+    sine_lut[12] = amplitude * sin(12 * freq_reciprocal);
+    sine_lut[13] = amplitude * sin(13 * freq_reciprocal);
+    sine_lut[14] = amplitude * sin(14 * freq_reciprocal);
+    sine_lut[15] = amplitude * sin(15 * freq_reciprocal);
+    sine_lut[16] = amplitude * sin(16 * freq_reciprocal);
+    sine_lut[17] = amplitude * sin(17 * freq_reciprocal);
+    sine_lut[18] = amplitude * sin(18 * freq_reciprocal);
+    sine_lut[19] = amplitude * sin(19 * freq_reciprocal);
+    sine_lut[20] = amplitude * sin(20 * freq_reciprocal);
+    sine_lut[21] = amplitude * sin(21 * freq_reciprocal);
+    sine_lut[22] = amplitude * sin(22 * freq_reciprocal);
+    sine_lut[23] = amplitude * sin(23 * freq_reciprocal);
+    sine_lut[24] = amplitude * sin(24 * freq_reciprocal);
+    sine_lut[25] = amplitude * sin(25 * freq_reciprocal);
+    sine_lut[26] = amplitude * sin(26 * freq_reciprocal);
+    sine_lut[27] = amplitude * sin(27 * freq_reciprocal);
+    sine_lut[28] = amplitude * sin(28 * freq_reciprocal);
+    sine_lut[29] = amplitude * sin(29 * freq_reciprocal);
+    sine_lut[30] = amplitude * sin(30 * freq_reciprocal);
+    sine_lut[31] = amplitude * sin(31 * freq_reciprocal);
+    sine_lut[32] = amplitude * sin(32 * freq_reciprocal);
+    sine_lut[33] = amplitude * sin(33 * freq_reciprocal);
+    sine_lut[34] = amplitude * sin(34 * freq_reciprocal);
+    sine_lut[35] = amplitude * sin(35 * freq_reciprocal);
+    sine_lut[36] = amplitude * sin(36 * freq_reciprocal);
+    sine_lut[37] = amplitude * sin(37 * freq_reciprocal);
+    sine_lut[38] = amplitude * sin(38 * freq_reciprocal);
+    sine_lut[39] = amplitude * sin(39 * freq_reciprocal);
+    sine_lut[40] = amplitude * sin(40 * freq_reciprocal);
+    sine_lut[41] = amplitude * sin(41 * freq_reciprocal);
+    sine_lut[42] = amplitude * sin(42 * freq_reciprocal);
+    sine_lut[43] = amplitude * sin(43 * freq_reciprocal);
+    sine_lut[44] = amplitude * sin(44 * freq_reciprocal);
+    sine_lut[45] = amplitude * sin(45 * freq_reciprocal);
+    sine_lut[46] = amplitude * sin(46 * freq_reciprocal);
+    sine_lut[47] = amplitude * sin(47 * freq_reciprocal);
+    sine_lut[48] = amplitude * sin(48 * freq_reciprocal);
+    sine_lut[49] = amplitude * sin(49 * freq_reciprocal);
+  end
+
+  always @(posedge clk or negedge reset_n) begin
+    if (~reset_n) begin
+      phase <= 16'b0;
+      amplitude_scaled <= 32'b0;
+      sq_wave <= 32'b0;
+    end else begin
+      // Increment the phase accumulator based on the input frequency
+      phase <= phase + frequency;
+
+      // Ensure the phase stays within the range [0, 49] to cover one full cycle
+      if (phase >= 50) begin
+        phase <= 16'b0;
+      end
+
+      // Scale the amplitude to fit within the 32-bit range
+      amplitude_scaled <= amplitude << 29; // Left shift by 29 bits for scaling
+
+      // Read the scaled sine value from the lookup table
+      sq_wave <= amplitude_scaled * sine_lut[phase[5:0]];
     end
-		
+  end
+
 endmodule
