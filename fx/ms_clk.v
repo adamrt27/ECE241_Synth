@@ -7,6 +7,14 @@ module ms_clk(clk, reset, pulse);
 
 endmodule
 
+module s_clk(clk, reset, pulse;
+	input clk; // clock
+	input reset; //active low reset
+	output pulse; // pulses every second
+
+	RateDivider r0(clk,~reset,2'b01, pulse);
+endmodule
+
 module RateDivider
 #(parameter CLOCK_FREQUENCY = 50000000) (
 	input ClockIn,

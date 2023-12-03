@@ -107,6 +107,10 @@ module IO_controller(
     reg [30:0] sustain_reg;
     reg [30:0] release_reg;
 
+    // creating a clk that pulses every second for octave
+    wire second_clk;
+    s_clk clk_second(clk, reset, second_clk);
+
     always@(posedge clk) begin
         if (~reset) begin // setting defaults
                           // octave: 4 (if note is 0 then plays middle c)
@@ -123,7 +127,8 @@ module IO_controller(
             release_reg <= 31'd1073741824;
         end
         else // updating values of octave, amplitude, and ADSR
-            octave_reg <= octave_reg + (octave_plus_plus*(10)) - (octave_minus_minus*(10));
+            if (second_clk)
+                octave_reg <= octave_reg + (octave_plus_plus) - (octave_minus_minus);
             // purpose of 1 << 24 is to make each setting essentially 8 bits, instead of 32.
             case (ADSR_selector) 
                 0: // amplitude
