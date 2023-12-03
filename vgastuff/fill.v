@@ -1,4 +1,4 @@
-// Part 2 skeleton
+
 
 module fill
 CLOCK_50, // On Board 50 MHz
@@ -52,45 +52,39 @@ wire done;
 wire writeEn;
 wire [3:0]state;
 
-vgadisplay a(.iClock(CLOCK_50),
-.iResetn(KEY[0]),
-.iPlotBox(~KEY[1]),
-.iLoadX(~KEY[3]),
-.iXY_Coord(SW[6:0]),
-.iColour(SW[9:7]),
-.oColour(colour),
-.oPlot(writeEn),
-.oX(x),
-.oY(y),
-.oDone(done),
-.state(state));
-
-assign LEDR[3:0] = state;
-// Create an Instance of a VGA controller - there can be only one!
-// Define the number of colours as well as the initial background
-// image file (.MIF) for the controller.
-vga_adapter VGA(
-.resetn(resetn),
-.clock(CLOCK_50),
-.colour(colour),
-.x(x),
-.y(y),
-.plot(writeEn),
-/* Signals for the DAC to drive the monitor. */
-.VGA_R(VGA_R),
-.VGA_G(VGA_G),
-.VGA_B(VGA_B),
-.VGA_HS(VGA_HS),
-.VGA_VS(VGA_VS),
-.VGA_BLANK(VGA_BLANK_N),
-.VGA_SYNC(VGA_SYNC_N),
-.VGA_CLK(VGA_CLK));
-defparam VGA.RESOLUTION = "320x240";
-defparam VGA.MONOCHROME = "FALSE";
-defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
-defparam VGA.BACKGROUND_IMAGE = "piano.mif";
-
-// Put your code here. Your code should produce signals x,y,colour and writeEn
-// for the VGA controller, in addition to any other functionality your design may require.
-
+vgadisplay v0(
+		.iClock(CLOCK_50),
+		.iResetn(reset),
+		.note_in(note_in),
+		.oColour(colour),
+		.oPlot(writeEn),
+		.oX(x),
+		.oY(y),
+		.note(note),
+		.octave_minus_minus(octave_minus_minus),
+    .octave_plus_plus(octave_plus_plus),
+		.ADSR_selector(ADSR_selector),
+    .ADSR_minus_minus(ADSR_minus_minus),
+		.ADSR_plus_plus(ADSR_plus_plus));
+	
+	vga_adapter VGA(
+		.resetn(resetn),
+		.clock(CLOCK_50),
+		.colour(colour),
+		.x(x),
+		.y(y),
+		.plot(writeEn),
+		.VGA_R(VGA_R),
+		.VGA_G(VGA_G),
+		.VGA_B(VGA_B),
+		.VGA_HS(VGA_HS),
+		.VGA_VS(VGA_VS),
+		.VGA_BLANK(VGA_BLANK_N),
+		.VGA_SYNC(VGA_SYNC_N),
+		.VGA_CLK(VGA_CLK));
+		defparam VGA.RESOLUTION = "320x240";
+		defparam VGA.MONOCHROME = "FALSE";
+		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+		defparam VGA.BACKGROUND_IMAGE = "piano.mif";
+  
 endmodule
