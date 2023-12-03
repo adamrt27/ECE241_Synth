@@ -25,7 +25,7 @@ inout				PS2_DAT,
 	 
 
    
-    always@(eightbit) begin
+    always@(posedge PS2_CLK) begin
 	 	 note_in = temp_note_in;
         if (~KEY[0]) begin // setting defaults
             note <= 4'b0000;
@@ -188,6 +188,18 @@ inout				PS2_DAT,
                             note_in <= 0;//note_in should be 0 now
                             note_change <= 0;//we should change note_change to 0
                         end
+                    end
+                end
+                8'hF0: //0 which is making the note play continuously
+                begin
+                    if(~change)begin
+                        if(~note_change)//only if the shift key is pressed should you change note_in to 0
+                            note_in <= 0;
+                        octave_minus_minus <= 0;
+                        octave_plus_plus <= 0;
+                        ADSR_minus_minus <= 0;
+                        ADSR_plus_plus <= 0;
+                        change <= 0;
                     end
                 end
             endcase
