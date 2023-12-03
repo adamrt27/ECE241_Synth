@@ -1,4 +1,4 @@
-module square_wave_generator(
+module sine(
 	input clk,
 	input reset_n,
     input [15:0]frequency,
@@ -12,7 +12,7 @@ module square_wave_generator(
 //Initialize the sine rom with samples. 
     initial begin
         i = 0;
-                sine[0] = 0;
+                sine[0] = 32b'0*amplitude;//add it to whatever amplitude is
                 sine[1] = 5;
                 sine[2] = 10;
                 sine[3] = 15;
