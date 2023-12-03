@@ -1,4 +1,15 @@
-
+fill f0(
+		.CLOCK_50,
+		.VGA_CLK(VGA_CLK),
+		.VGA_HS(VGA_HS),
+		.VGA_VS(VGA_VS),
+		.VGA_BLANK_N(VGA_BLANK_N),
+		.VGA_SYNC_N(VGA_SYNC_N), // VGA SYNC
+		.VGA_R(VGA_R),   // VGA Red[9:0]
+		.VGA_G(VGA_G), // VGA Green[9:0]
+		.VGA_B(VGA_B),   // VGA Blue[9:0]
+		.LEDR(LEDR)
+);
 
 module fill
 CLOCK_50, // On Board 50 MHz
