@@ -10,26 +10,24 @@ module overdrive(clk, activate, overdrive, threshold, neg_threshold, max_amplitu
 
     output reg [30:0] adj_cur_amplitude; // output multiplier that changes wave shape
 
-    // amplification factor
-    reg [30:0] amp_factor;
-
     // clipping
     always@(posedge clk)
     begin
         if (activate) begin
-            if (overdrive)
-                amp_factor = max_amplitude/threshold;
-            else 
-                amp_factor = 1;
-            if(cur_amplitude > threshold) 
-                adj_cur_amplitude <= threshold * amp_factor;
+            if(cur_amplitude > threshold && overdrive))
+                adj_cur_amplitude <= (threshold * max_amplitude)/threshold;
+            else if (cur_amplitude > threshold && ~overdrive)
+                adj_cur_amplitude <= threshold;
             else if (cur_amplitude < neg_threshold && overdrive)
                 adj_cur_amplitude <= 0;
             else if (cur_amplitude < neg_threshold && ~overdrive)
                 adj_cur_amplitude <= neg_threshold;
-            else
+            else if (overdrive)
                 adj_cur_amplitude <= cur_amplitude * amp_factor;
-        end else
+            else
+                adj_cur_amplitude <= cur_amplitude;
+        end
+        else
             adj_cur_amplitude <= cur_amplitude;
     end
 endmodule
