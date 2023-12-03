@@ -34,7 +34,14 @@ output [7:0] VGA_B;   // VGA Blue[7:0]
 output [9:0]LEDR;
 
 wire resetn;
-assign resetn = KEY[0];
+wire note_in;
+wire [3:0] note;
+wire [2:0] octave;
+wire octave_plus_plus; // if 1, increment octave by 1, else dont change 
+wire octave_minus_minus; // if 1 decrease octave by 1, else dont change
+wire [2:0] ADSR_selector; // if 0 - change amplitude/volume
+wire ADSR_plus_plus; // if 1, increment selected ADSR by 1
+wire ADSR_minus_minus;
 
 // Create the colour, x, y and writeEn wires that are inputs to the controller.
 
