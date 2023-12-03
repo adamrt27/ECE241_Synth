@@ -33,7 +33,7 @@ inout				PS2_DAT,
             octave_plus_plus <= 0;
             ADSR_minus_minus <= 0;
             ADSR_plus_plus <= 0;
-            ADSR_selector <= 0i
+            ADSR_selector <= 0;
             note_in <= 0;
             sine <= 0;
             overdrive <= 2'b00;
