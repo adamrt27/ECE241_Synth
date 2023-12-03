@@ -125,20 +125,20 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
     envelop_filter env0(clk, reset, note_in, attack, decay, sustain, rel, amplitude, cur_amplitude);
 
     // filters with overdrive/compression
-    // overdrive drive(.clk(clk), 
-    //                 .activate(sine && overdrive[1]), 
-    //                 .overdrive(overdrive[0]), 
-    //                 .threshold(max_amplitude/2),
-    //                 .max_amplitude(max_amplitude),
-    //                 .cur_amplitude(cur_amplitude),
-    //                 .adj_cur_amplitude(od_amplitude)
-    //                 );
+    overdrive drive(.clk(clk), 
+                    .activate(sine && overdrive[1]), 
+                    .overdrive(overdrive[0]), 
+                    .threshold(max_amplitude/2),
+                    .max_amplitude(max_amplitude),
+                    .cur_amplitude(cur_amplitude),
+                    .adj_cur_amplitude(od_amplitude)
+                    );
 
     // puts current value of wave in wave_reg
-    square_wave_generator wv(clk, reset, freq_reg, cur_amplitude, wave_reg_unsigned);
+    square_wave_generator wv(clk, reset, freq_reg, od_amplitude, wave_reg_unsigned);
 
     // converts current value of wave to twos complement
-    twos_comp_converter conv(wave_reg_unsigned, cur_amplitude, wave_reg);
+    twos_comp_converter conv(wave_reg_unsigned, od_amplitude, wave_reg);
 
     // load inputs to registers    
     always@(posedge clk) begin
