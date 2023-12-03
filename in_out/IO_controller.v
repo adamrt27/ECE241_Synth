@@ -3,6 +3,7 @@ module IO_controller(
     // general inputs
     input CLOCK_50, 
     input [3:0] KEY, 
+    input [9:0] SW,
 
     // Inputs (audio & ps2)
 	input				AUD_ADCDAT,
@@ -66,10 +67,18 @@ module IO_controller(
             .note_in(note_in), 
             .ADSR_minus_minus(ADSR_minus_minus),
             .ADSR_plus_plus(ADSR_plus_plus),
-            .ADSR_selector(ADSR_selector)
+            .ADSR_selector(ADSR_selector),
+            .sine(sine),
+            .overdrive(overdrive)
     );
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
+
+    // ************************************************************************************************************************************ 
+    // setting up switches inputs
+
+    assign sine = SW[0];
+    assign overdrive = SW[2:1];
 
     // ************************************************************************************************************************************
     // setting up ALUcontroller
@@ -83,7 +92,9 @@ module IO_controller(
     wire [30:0] attack;
     wire [30:0] decay;
     wire [30:0] sustain;
-    wire [30:0] rel;
+    wire [30:0] rel;    
+    wire sine;
+    wire [1:0] overdrive;
 
     // wire ouputs from ALUcontroller
     wire [31:0] wave_out;
@@ -162,7 +173,9 @@ module IO_controller(
         .attack(attack), 
         .decay(decay), 
         .sustain(sustain), 
-        .rel(rel), 
+        .rel(rel),  
+        .sine(sine),
+        .overdrive(overdrive),
         .wave_out(wave_out)
     );
 
