@@ -31,7 +31,7 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
    ctrl C0(
       .iClock(iClock),
       .iResetn(iResetn),
-      .note_in(note_in),
+		.note_in(note_in),
       .ld_draw(ld_draw),
       .counter(counter)
    );
@@ -63,7 +63,7 @@ module ctrl(
    input [4:0] counter,
    output reg ld_draw
 );
-reg [3:0] cur_state = 4'b0000;
+    reg [3:0] cur_state = 4'b0000;
 reg [3:0] next_state = 4'b0000;
 
    // Define states
@@ -226,19 +226,19 @@ end
       // Initialization on reset
       oPlot <= 1'b0;
       oColour <= 3'b000;
-      oX <= 8'b00000000; 
-      oY <= 7'b0000000; 
+      oX <= 8'b00000000; // Set VGA pixel X-coordinate based on note
+      oY <= 7'b0000000; // Set VGA pixel Y-coordinate based on note
       counter <= 5'd00000;
    end
    else if(ld_draw) begin
       // Logic for drawing in yellow
       oPlot <= 1'b1;
       if (counter <= 5'b01111) begin
-         oColour <= 3'b110; // Set the color to yellow
-         
+         oColour <= 3'b110; // Set the color to yellow (RGB: 001)
+         // Set initial values during the first cycle
          if (counter == 5'd0) begin
-            oX <= vga_x_position + counter[1:0]; 
-            oY <= vga_y_position + counter[3:2]; 
+            oX <= vga_x_position + counter[1:0]; // Adjust based on your requirements
+            oY <= vga_y_position + counter[3:2]; // Adjust based on your requirements
          end
       end
       else begin
