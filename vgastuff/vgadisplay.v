@@ -1,6 +1,6 @@
 
 module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minus,
-                  ADSR_plus_plus,ADSR_minus_minus,ADSR_selector,oX,oY,oColour,oPlot);
+                  ADSR_plus_plus,ADSR_minus_minus,ADSR_selector,oX,oY,oColour,oPlot,state);
    // Inputs
    input iResetn;
    input iClock;
@@ -16,11 +16,14 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
    output [8:0] oX;          // VGA pixel coordinates
    output [7:0] oY;
    output [2:0] oColour;      // VGA pixel colour (0-7)
-   output oPlot;              // Pixel draw enable
+   output oPlot; 
+	output [3:0] state;
+	// Pixel draw enable
 
    // Internal wires
-   wire ld_draw;
+   wire ld_draw, ld_piano;
    wire [4:0] counter;
+	wire [16:0] address;
 
 
    // Instantiate control module
@@ -28,8 +31,11 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
       .iClock(iClock),
       .iResetn(iResetn),
 		.note_in(note_in),
+		.address(address),
       .ld_draw(ld_draw),
-      .counter(counter)
+		.ld_piano(ld_piano),
+      .counter(counter),
+		.state(state)
    );
 
    // Instantiate datapath module
@@ -37,6 +43,7 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
       .iClock(iClock),
       .iResetn(iResetn),
       .ld_draw(ld_draw),
+		.ld_piano(ld_piano),
 		.note(note),
 		.octave_plus_plus(octave_plus_plus),
 		.ADSR_plus_plus(ADSR_plus_plus),
@@ -46,8 +53,11 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
       .oY(oY),
       .oColour(oColour),
       .oPlot(oPlot),
-      .counter(counter)
+      .counter(counter),
+		.address(address)
    );
+
+				
 
 endmodule // part2
 
@@ -56,16 +66,22 @@ module ctrl(
    input iClock,
    input iResetn,
    input note_in,
+	input [16:0] address,
    input [4:0] counter,
-   output reg ld_draw
+   output reg ld_draw,
+	output reg ld_piano,
+	output [3:0] state
 );
-    reg [3:0] cur_state = 4'b0000;
 reg [3:0] next_state = 4'b0000;
+ reg [3:0] cur_state = 4'b0000;
+ assign state = cur_state;
+
 
    // Define states
    localparam A = 4'b0000, B = 4'b0001, C = 4'b0010, D = 4'b0011;
    always @(*)
    begin: state_table
+
       // State transition logic
       case (cur_state)
          A: begin
@@ -79,8 +95,9 @@ reg [3:0] next_state = 4'b0000;
             next_state = (note_in) ? C : D;
          end
          D: begin // erase
-            next_state = (counter <= 5'b01111) ? D : A;
+            next_state = (address <= 17'd76800) ? D : A;
          end
+			
          default: next_state = A;
       endcase
    end // state_table
@@ -89,14 +106,21 @@ reg [3:0] next_state = 4'b0000;
    begin: enable_signals
       // Initialize signals to 0 by default
       ld_draw = 0;
+		ld_piano = 0;
 
       // Output control based on the current state
       case (cur_state)
-         B, D: begin
+         B: begin
             ld_draw = 1;
+				ld_piano = 0;
          end
+			D: begin
+				ld_draw=0;
+				ld_piano = 1;
+			end
          default: begin
             ld_draw = 0;
+				ld_piano = 0;
          end
       endcase
    end // enable_signals
@@ -118,7 +142,7 @@ endmodule
 module data(
    input iClock,
    input iResetn,
-   input ld_draw,
+   input ld_draw, ld_piano,
 	input [3:0] note,
 	input octave_plus_plus,
 	input octave_minus_minus,
@@ -128,8 +152,14 @@ module data(
    output reg [7:0] oY,
    output reg [2:0] oColour,     // VGA pixel colour (0-7)
    output reg oPlot,       // Pixel draw enable
-   output reg [4:0] counter
+   output reg [4:0] counter,
+	output reg [16:0] address
 );
+
+//Counters to re-print piano on screen
+reg [8:0] xCount;
+reg [7:0] yCount;
+
 
 // Internal wires for VGA pixel coordinates based on note
 reg [8:0] vga_x_position;
@@ -217,6 +247,18 @@ always @* begin
 		  end
 
 end
+
+	wire [2:0] piano_col;
+	memory m0(.address(address), .clock(iClock), .q(piano_col));
+	
+	always @(posedge iClock) begin
+	    if(!ld_piano)
+		     address <= 0;
+		 else if(ld_piano && address < 17'd76800)
+		     address <= address + 17'd1;
+	end
+	
+		
    always @(posedge iClock) begin
    if(~iResetn) begin
       // Initialization on reset
@@ -225,6 +267,8 @@ end
       oX <= 8'b00000000; // Set VGA pixel X-coordinate based on note
       oY <= 7'b0000000; // Set VGA pixel Y-coordinate based on note
       counter <= 5'd00000;
+		xCount <= 9'd0;
+		yCount <= 8'd0;
    end
    else if(ld_draw) begin
       // Logic for drawing in yellow
@@ -233,8 +277,8 @@ end
          oColour <= 3'b110; // Set the color to yellow (RGB: 001)
          // Set initial values during the first cycle
          if (counter == 5'd0) begin
-		 oX <= vga_x_position + counter[4:0]; // Adjust based on your requirements
-		 oY <= vga_y_position + counter[4:0]; // Adjust based on your requirements
+            oX <= vga_x_position + counter[1:0]; // Adjust based on your requirements
+            oY <= vga_y_position + counter[3:2]; // Adjust based on your requirements
          end
       end
       else begin
@@ -242,6 +286,31 @@ end
          counter <= 5'd0;
       end
    end
+  else if(ld_piano) begin
+      oPlot = 1'b1;
+      if (xCount < 9'd319 && yCount < 8'd239) begin
+         //oColour <= 3'b110; // Set the color to yellow (RGB: 001)
+         // Set initial values during the first cycle
+			xCount <= xCount + 9'd1;
+			
+			if(xCount == 9'd319 && yCount < 8'd239)
+			    yCount <= yCount + 8'd1;
+				 
+			else if(xCount == 9'd319 && yCount == 8'd239)
+			    xCount <= xCount + 9'd1;
+				 yCount <= yCount + 8'd1;
+			
+         if (address < 17'd76800) begin
+            oX <= xCount; // Adjust based on your requirements
+            oY <= yCount;
+			   oColour <= piano_col;	// Adjust based on your requirements
+         end
+      end
+  end
+  else if(!ld_piano)begin
+      xCount <= 9'd0;
+		yCount <= 8'd0;
+  end
 end
 
 
