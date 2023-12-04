@@ -254,7 +254,7 @@ end
 	always @(posedge iClock) begin
 	    if(!ld_piano)
 		     address <= 0;
-		 else if(ld_piano && address < 17'd76800)
+		 else if(ld_piano && address <= 17'd76800)
 		     address <= address + 17'd1;
 	end
 	
@@ -264,8 +264,8 @@ end
       // Initialization on reset
       oPlot <= 1'b0;
       oColour <= 3'b000;
-      oX <= 8'b00000000; // Set VGA pixel X-coordinate based on note
-      oY <= 7'b0000000; // Set VGA pixel Y-coordinate based on note
+      oX <= 9'b000000000; // Set VGA pixel X-coordinate based on note
+      oY <= 8'b00000000; // Set VGA pixel Y-coordinate based on note
       counter <= 5'd00000;
 		xCount <= 9'd0;
 		yCount <= 8'd0;
@@ -274,7 +274,8 @@ end
       // Logic for drawing in yellow
       oPlot = 1'b1;
       if (counter <= 5'b01111) begin
-         oColour <= 3'b110; // Set the color to yellow (RGB: 001)
+         oColour <= 3'b110;
+		counter <= counter + 1;
          // Set initial values during the first cycle
          if (counter == 5'd0) begin
             oX <= vga_x_position + counter[1:0]; // Adjust based on your requirements
@@ -288,18 +289,20 @@ end
    end
   else if(ld_piano) begin
       oPlot = 1'b1;
-      if (xCount < 9'd319 && yCount < 8'd239) begin
+      if (xCount <= 9'd319 && yCount <= 8'd239) begin
          //oColour <= 3'b110; // Set the color to yellow (RGB: 001)
          // Set initial values during the first cycle
-			xCount <= xCount + 9'd1;
 			
-			if(xCount == 9'd319 && yCount < 8'd239)
-			    yCount <= yCount + 8'd1;
-				 
-			else if(xCount == 9'd319 && yCount == 8'd239)
-			    xCount <= xCount + 9'd1;
-				 yCount <= yCount + 8'd1;
 			
+			if(xCount == 9'd319) begin
+				xCount = 0;
+			    yCount = yCount + 8'd1;
+			 end
+			else if(xCount == 9'd319 && yCount == 8'd239)begin
+			    xCount = xCount + 9'd1;
+				yCount = yCount + 8'd1;
+			end
+			xCount = xCount + 9'd1;
          if (address < 17'd76800) begin
             oX <= xCount; // Adjust based on your requirements
             oY <= yCount;
