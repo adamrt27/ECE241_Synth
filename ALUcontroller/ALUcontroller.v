@@ -127,24 +127,24 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
     envelop_filter env0(clk, reset, note_in, attack, decay, sustain, rel, amplitude, cur_amplitude);
 
     // does sine wave to
-    SineWaveGenerator sine_wv(clk, reset, freq_reg, cur_amplitude, wave_reg_sine_unfiltered);
+    SineWaveGenerator sine_wv(clk, reset, freq_reg, cur_amplitude, wave_reg_sine);
 
     // filters with overdrive/compression
-    overdrive drive(.clk(clk), 
-                    .activate(overdrive[1]), 
-                    .overdrive(overdrive[0]), 
-                    .threshold(3*max_amplitude/4),
-                    .neg_threshold(max_amplitude/4)
-                    .max_amplitude(cur_amplitude),
-                    .cur_amplitude(wave_reg_sine_unfiltered),
-                    .adj_cur_amplitude(wave_reg_sine)
-                    );
+//    overdrive drive(.clk(clk), 
+//                    .activate(overdrive[1]), 
+//                    .overdrive(overdrive[0]), 
+//                    .threshold(max_amplitude - 20),
+//					.neg_threshold(20),
+//                    .max_amplitude(cur_amplitude),
+//                    .cur_amplitude(wave_reg_sine_unfiltered),
+//                    .adj_cur_amplitude(wave_reg_sine)
+//                    );
 
     // puts current value of wave in wave_reg
     square_wave_generator wv(clk, reset, freq_reg, cur_amplitude, wave_reg_unsigned_square);
 
     // converts current value of wave to twos complement
-    twos_comp_converter conv(wave_reg_unsigned, od_amplitude, wave_reg_square);
+    twos_comp_converter conv(wave_reg_unsigned_square, cur_amplitude, wave_reg_square);
 
     // load inputs to registers    
     always@(posedge clk) begin
