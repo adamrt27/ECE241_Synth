@@ -189,7 +189,7 @@ inout				PS2_DAT,
                             note_in <= 0;//note_in should be 0 now
                             note_change <= 0;//we should change note_change to 0
                         end
-								change<=1;
+						change<=1;
                     end
                 end
             endcase
