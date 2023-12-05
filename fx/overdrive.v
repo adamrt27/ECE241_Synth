@@ -14,7 +14,7 @@ module overdrive(clk, activate, overdrive, threshold, neg_threshold, max_amplitu
     always@(posedge clk)
     begin
         if (activate) begin
-            if(cur_amplitude > threshold && overdrive))
+            if(cur_amplitude > threshold && overdrive)
                 adj_cur_amplitude <= (threshold * max_amplitude)/threshold;
             else if (cur_amplitude > threshold && ~overdrive)
                 adj_cur_amplitude <= threshold;

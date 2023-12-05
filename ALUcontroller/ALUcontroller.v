@@ -115,6 +115,7 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
     wire [31:0] wave_reg_unsigned_square;           // stores current unsigned value of wave
     wire [31:0] wave_reg_square;                    // stores twos complement value of wave
     wire [31:0] wave_reg_sine;             // stores current value of wave
+    wire [31:0] wave_reg_sine_unfiltered;   // stores current value of wave before overdrive
 
     wire [30:0] cur_amplitude;      // stores amplitude changes made by ADSR envelop filter
     wire [30:0] od_amplitude;       // stores overdrive amplti
@@ -125,21 +126,21 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
     // filters through ADSR filter
     envelop_filter env0(clk, reset, note_in, attack, decay, sustain, rel, amplitude, cur_amplitude);
 
+    // does sine wave to
+    SineWaveGenerator sine_wv(clk, reset, freq_reg, cur_amplitude, wave_reg_sine_unfiltered);
+
     // filters with overdrive/compression
     overdrive drive(.clk(clk), 
-                    .activate(sine && overdrive[1]), 
+                    .activate(overdrive[1]), 
                     .overdrive(overdrive[0]), 
                     .threshold(max_amplitude/2),
                     .max_amplitude(max_amplitude),
-                    .cur_amplitude(cur_amplitude),
-                    .adj_cur_amplitude(od_amplitude)
+                    .cur_amplitude(wave_reg_sine_unfiltered),
+                    .adj_cur_amplitude(wave_reg_sine)
                     );
 
     // puts current value of wave in wave_reg
-    square_wave_generator wv(clk, reset, freq_reg, od_amplitude, wave_reg_unsigned_square);
-
-    // does sine wave to
-    SineWaveGenerator sine_wv(clk, reset, freq_reg, od_amplitude, wave_reg_sine);
+    square_wave_generator wv(clk, reset, freq_reg, cur_amplitude, wave_reg_unsigned_square);
 
     // converts current value of wave to twos complement
     twos_comp_converter conv(wave_reg_unsigned, od_amplitude, wave_reg_square);
