@@ -67,9 +67,7 @@ module IO_controller(
             .note_in(note_in), 
             .ADSR_minus_minus(ADSR_minus_minus),
             .ADSR_plus_plus(ADSR_plus_plus),
-            .ADSR_selector(ADSR_selector),
-            .sine(sine),
-            .overdrive(overdrive)
+            .ADSR_selector(ADSR_selector)
     );
 
     // feed into: note_in, note, octave_plus_plus, octave_minus_minus, ADSR_selector, ADSR_plus_plus, ADSR_minus_minus
@@ -77,8 +75,11 @@ module IO_controller(
     // ************************************************************************************************************************************ 
     // setting up switches inputs
 
+	 wire note_in_override;
+	 
     assign sine = SW[0];
     assign overdrive = SW[2:1];
+	 assign note_in_override = SW[3];
 
     // ************************************************************************************************************************************
     // setting up ALUcontroller
@@ -166,7 +167,7 @@ module IO_controller(
     // loading everything into ALUcontroller
     ALUcontroller a(.clk(clk), 
         .reset(reset), 
-        .note_in(note_in), 
+        .note_in(note_in || note_in_override), 
         .note(note), 
         .octave(octave), 
         .amplitude(amplitude), 
@@ -294,9 +295,9 @@ module IO_controller(
 
     // LEDR
     // set note_in to LEDR 0, and note to LEDR 1-4 for testing
-    assign LEDR[0] = note_in;
+    assign LEDR[0] = note_in || note_in_override;
     assign LEDR[4:1] = note;
-	 assign LEDR[8:5] = {octave_plus_plus, octave_minus_minus, ADSR_plus_plus, ADSR_minus_minus};
+	 assign LEDR[7:5] = {overdrive, sine};
 	 
 	 
 endmodule
