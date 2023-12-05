@@ -27,7 +27,7 @@ module hex_decoder(c, display);
 
 	// assigning outputs
 	assign display[0] = (M1 | M4 | Mb | Md);
-	assign display[1] = (M5 | M6 | MC | ME | MF);
+	assign display[1] = (M5 | M6 | MC | ME | MF | Mb);
 	assign display[2] = (M2 | MC | ME | MF);
 	assign display[3] = (M1 | M4 | M7 | M9 | MA | MF);
 	assign display[4] = (M1 | M3 | M4 | M5 | M7 | M9);
