@@ -23,7 +23,7 @@ module overdrive(clk, activate, overdrive, threshold, neg_threshold, max_amplitu
             else if (cur_amplitude < neg_threshold && ~overdrive)
                 adj_cur_amplitude <= neg_threshold;
             else if (overdrive)
-                adj_cur_amplitude <= cur_amplitude * amp_factor;
+                adj_cur_amplitude <= (cur_amplitude * max_amplitude)/threshold;
             else
                 adj_cur_amplitude <= cur_amplitude;
         end
