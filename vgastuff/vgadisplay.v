@@ -22,7 +22,7 @@ module vgadisplay(iResetn,iClock,note,note_in,octave_plus_plus,octave_minus_minu
 
    // Internal wires
    wire ld_draw, ld_piano;
-   wire [4:0] counter;
+   wire [8:0] counter;
 	wire [16:0] address;
 
 
@@ -67,7 +67,7 @@ module ctrl(
    input iResetn,
    input note_in,
 	input [16:0] address,
-   input [4:0] counter,
+   input [8:0] counter,
    output reg ld_draw,
 	output reg ld_piano,
 	output [3:0] state
@@ -89,7 +89,7 @@ reg [3:0] next_state = 4'b0000;
             else next_state = A;
          end
          B: begin // draw
-            next_state = (counter <= 5'b01111) ? B : C;
+            next_state = (counter <= 9'b011111111) ? B : C;
          end
          C: begin // wait for note release
             next_state = (note_in) ? C : D;
@@ -152,7 +152,7 @@ module data(
    output reg [7:0] oY,
    output reg [2:0] oColour,     // VGA pixel colour (0-7)
    output reg oPlot,       // Pixel draw enable
-   output reg [4:0] counter,
+   output reg [8:0] counter,
 	output reg [16:0] address
 );
 
@@ -266,25 +266,25 @@ end
       oColour <= 3'b000;
       oX <= 9'b000000000; // Set VGA pixel X-coordinate based on note
       oY <= 8'b00000000; // Set VGA pixel Y-coordinate based on note
-      counter <= 5'd00000;
+      counter <= 9'd00000;
 		xCount <= 9'd0;
 		yCount <= 8'd0;
    end
    else if(ld_draw) begin
       // Logic for drawing in yellow
       oPlot = 1'b1;
-      if (counter <= 5'b01111) begin
-         oColour <= 3'b110;
+      if (counter <= 9'b011111111) begin
+         oColour <= 3'b010;
 		counter <= counter + 1;
          // Set initial values during the first cycle
-         if (counter == 5'd0) begin
-            oX <= vga_x_position + counter[1:0]; // Adjust based on your requirements
-            oY <= vga_y_position + counter[3:2]; // Adjust based on your requirements
+         if (counter >= 9'd0) begin
+            oX <= vga_x_position + counter[0]; // Adjust based on your requirements
+            oY <= vga_y_position + counter[1]; // Adjust based on your requirements
          end
       end
       else begin
          // Reset counter when not drawing
-         counter <= 5'd0;
+         counter <= 9'd0;
       end
    end
   else if(ld_piano) begin
@@ -299,9 +299,9 @@ end
 			    yCount = yCount + 8'd1;
 			 end
 			else if(xCount == 9'd319 && yCount == 8'd239)begin
-			    xCount = xCount + 9'd1;
+			    xCount = 0;
 				yCount = yCount + 8'd1;
-			end
+			end else
 			xCount = xCount + 9'd1;
          if (address < 17'd76800) begin
             oX <= xCount; // Adjust based on your requirements
