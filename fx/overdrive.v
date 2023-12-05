@@ -6,9 +6,9 @@ module overdrive(clk, activate, overdrive, threshold, neg_threshold, max_amplitu
     input [30:0] threshold; // the level at which to clip on positive side
     input [30:0] neg_threshold; // the level at which to clip on negative side
     input [30:0] max_amplitude; // the max amplitude (basically the current volume)
-    input [30:0] cur_amplitude; // the current amplitude of the sine wave
+    input [31:0] cur_amplitude; // the current amplitude of the sine wave
 
-    output reg [30:0] adj_cur_amplitude; // output multiplier that changes wave shape
+    output reg [31:0] adj_cur_amplitude; // output multiplier that changes wave shape
 
     // clipping
     always@(posedge clk)

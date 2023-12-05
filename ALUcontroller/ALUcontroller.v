@@ -133,8 +133,9 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
     overdrive drive(.clk(clk), 
                     .activate(overdrive[1]), 
                     .overdrive(overdrive[0]), 
-                    .threshold(max_amplitude/2),
-                    .max_amplitude(max_amplitude),
+                    .threshold(3*max_amplitude/4),
+                    .neg_threshold(max_amplitude/4)
+                    .max_amplitude(cur_amplitude),
                     .cur_amplitude(wave_reg_sine_unfiltered),
                     .adj_cur_amplitude(wave_reg_sine)
                     );
