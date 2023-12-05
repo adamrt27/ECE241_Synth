@@ -112,8 +112,9 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
     wire [31:0] freq_temp;   // holds current frequency, MAKE THIS AN ARRAY SO WE CAN PLAY MULTIPLE NOTES
     reg [15:0] freq_reg;    // holds register value of frequency, used to play note
 
-    wire [31:0] wave_reg_unsigned;           // stores current unsigned value of wave
-    wire [31:0] wave_reg;                    // stores twos complement value of wave
+    wire [31:0] wave_reg_unsigned_square;           // stores current unsigned value of wave
+    wire [31:0] wave_reg_square;                    // stores twos complement value of wave
+    wire [31:0] wave_reg_sine;             // stores current value of wave
 
     wire [30:0] cur_amplitude;      // stores amplitude changes made by ADSR envelop filter
     wire [30:0] od_amplitude;       // stores overdrive amplti
@@ -135,10 +136,13 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
                     );
 
     // puts current value of wave in wave_reg
-    square_wave_generator wv(clk, reset, freq_reg, od_amplitude, wave_reg_unsigned);
+    square_wave_generator wv(clk, reset, freq_reg, od_amplitude, wave_reg_unsigned_square);
+
+    // does sine wave to
+    SineWaveGenerator sine_wv(clk, reset, freq_reg, od_amplitude, wave_reg_sine);
 
     // converts current value of wave to twos complement
-    twos_comp_converter conv(wave_reg_unsigned, od_amplitude, wave_reg);
+    twos_comp_converter conv(wave_reg_unsigned, od_amplitude, wave_reg_square);
 
     // load inputs to registers    
     always@(posedge clk) begin
@@ -158,7 +162,10 @@ module datapath(clk, reset, note_in, note, octave, sine, amplitude, ld_note, ld_
             wave_out <= 0;
         end
         else begin 
-            wave_out <= wave_reg;
+            if (sine)
+                wave_out <= wave_reg_sine;
+            else
+                wave_out <= wave_reg_square;
         end
     end
 
