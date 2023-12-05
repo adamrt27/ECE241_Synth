@@ -148,10 +148,10 @@ module data(
 	input octave_minus_minus,
 	input ADSR_plus_plus,
 	input ADSR_minus_minus,
-   output reg [8:0] oX,         // VGA pixel coordinates
+   output reg [8:0] oX,         
    output reg [7:0] oY,
-   output reg [2:0] oColour,     // VGA pixel colour (0-7)
-   output reg oPlot,       // Pixel draw enable
+   output reg [2:0] oColour,     
+   output reg oPlot,    
    output reg [8:0] counter,
 	output reg [16:0] address
 );
@@ -264,22 +264,20 @@ end
       // Initialization on reset
       oPlot <= 1'b0;
       oColour <= 3'b000;
-      oX <= 9'b000000000; // Set VGA pixel X-coordinate based on note
-      oY <= 8'b00000000; // Set VGA pixel Y-coordinate based on note
+      oX <= 9'b000000000; 
+      oY <= 8'b00000000; 
       counter <= 9'd00000;
 		xCount <= 9'd0;
 		yCount <= 8'd0;
    end
    else if(ld_draw) begin
-      // Logic for drawing in yellow
       oPlot = 1'b1;
       if (counter <= 9'b011111111) begin
          oColour <= 3'b010;
 		counter <= counter + 1;
-         // Set initial values during the first cycle
          if (counter >= 9'd0) begin
-            oX <= vga_x_position + counter[0]; // Adjust based on your requirements
-            oY <= vga_y_position + counter[1]; // Adjust based on your requirements
+            oX <= vga_x_position + counter[0]; 
+            oY <= vga_y_position + counter[1]; 
          end
       end
       else begin
@@ -290,9 +288,7 @@ end
   else if(ld_piano) begin
       oPlot = 1'b1;
       if (xCount <= 9'd319 && yCount <= 8'd239) begin
-         //oColour <= 3'b110; // Set the color to yellow (RGB: 001)
-         // Set initial values during the first cycle
-			
+         //oColour <= 3'b010;
 			
 			if(xCount == 9'd319) begin
 				xCount = 0;
@@ -304,9 +300,9 @@ end
 			end else
 			xCount = xCount + 9'd1;
          if (address < 17'd76800) begin
-            oX <= xCount; // Adjust based on your requirements
+            oX <= xCount; 
             oY <= yCount;
-			   oColour <= piano_col;	// Adjust based on your requirements
+	    oColour <= piano_col;	
          end
       end
   end
