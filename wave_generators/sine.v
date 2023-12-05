@@ -7,18 +7,12 @@ module SineWaveGenerator (
 );
 
   reg [31:0] sine_lut [0:99];  // Lookup table for sine values
-  reg [15:0] phase;          // 16-bit phase accumulator
-  reg [31:0] amplitude_scaled; // Scaled amplitude
   reg [10:0] counter;
 
   // Calculate the reciprocal of the frequency
-  reg [31:0] freq_reciprocal;
-  assign freq_reciprocal = 50000000 / frequency;
 
   // Instantiate sine values explicitly
   initial begin
-    initial begin
-        i = 0;
        sine_lut[0] = 0;
                 sine_lut[1] = 5;
                 sine_lut[2] = 10;
@@ -119,7 +113,7 @@ module SineWaveGenerator (
                 sine_lut[97] = -15;
                 sine_lut[98] = -10;
                 sine_lut[99] = -5;
-    end
+    
   end
   
   localparam CLOCK_FREQUENCY = 50000000;
@@ -128,17 +122,23 @@ module SineWaveGenerator (
 	assign sine_wave = sine_wave_reg;
 
   always @(posedge clk) begin
-		if (!reset_n | frequency == 0) begin
+		if (!reset_n || frequency == 0) begin
+			counter <= 0;
 			period <= 32'b0;
 			sine_wave_reg	<= 32'b0;
 		end
 	
 		else begin 
+			if(counter>=100)begin
+				counter<=0;
+			end
 			if (period == 32'b0) begin
-        counter<=counter+1'b1;
-				sine_wave_reg <= (amplitude * sine_lut[counter])/78;
+				counter <= counter + 1'b1;
+				sine_wave_reg <= (amplitude)*sine_lut[counter];
 				period <= (CLOCK_FREQUENCY / (frequency*100) - 1);		
 			end else period <= period - 1; 
 			end
+			
+			
 		end
 endmodule
