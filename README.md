@@ -2,4 +2,6 @@
 
 by Candice, Tara & Adam
 
-![alt text](https://github.com/adamrt27/ECE241_Synth/blob/main/IMG_5418.mov)
+https://www.youtube.com/watch?v=akZY1mJjSnE
+
+[![Watch the video](https://www.img.youtube.com/vi/akZY1mJjSnE/maxresdefault.jpg)](https://www.youtube.com/watch?v=akZY1mJjSnE)
