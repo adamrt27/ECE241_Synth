@@ -4,7 +4,7 @@ by Candice, Tara & Adam
 
 [Click here or on the image below to watch a demo](https://www.youtube.com/watch?v=akZY1mJjSnE)
 
-[![Watch the video](https://i9.ytimg.com/vi/akZY1mJjSnE/mqdefault.jpg?sqp=CKDLwqwG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGHIgYSg_MA8=&rs=AOn4CLAczK2sbEE5TxqMdAadl74Isg1aUg)](https://www.youtube.com/watch?v=akZY1mJjSnE)
+[![Watch the video](https://github.com/adamrt27/ECE241_Synth/blob/main/Screenshot%202023-12-30%20at%206.11.24%20PM.png)](https://www.youtube.com/watch?v=akZY1mJjSnE)
 
 ### Who did what:
 
